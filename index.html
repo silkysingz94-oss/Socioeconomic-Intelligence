@@ -1,0 +1,927 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GBoS GEOAI | Gambia Night-Time Light Intelligence</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+:root {
+ --bg:#07111c;
+ --panel:#101e2c;
+ --panel2:#15283a;
+ --line:#294154;
+ --text:#eaf2f8;
+ --muted:#91a7b9;
+ --cyan:#40c4d8;
+ --gold:#f4c45e;
+ --green:#56c995;
+ --red:#ef7777;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Inter,Arial,sans-serif;
+}
+header{
+ padding:19px 25px;
+ background:#0c1a28;
+ border-bottom:1px solid var(--line);
+ display:flex;justify-content:space-between;
+ align-items:center;gap:15px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{
+ width:43px;height:43px;border-radius:10px;
+ display:grid;place-items:center;
+ background:#193e50;color:var(--cyan);
+ font-weight:900;font-size:19px;
+}
+h1{font-size:19px;margin:0;letter-spacing:1px}
+.subtitle{font-size:11px;color:var(--muted);margin-top:5px}
+.status{
+ border:1px solid var(--line);border-radius:20px;
+ padding:8px 12px;font-size:11px;color:var(--green)
+}
+main{padding:17px;max-width:1800px;margin:auto}
+.intro{
+ padding:18px;background:linear-gradient(110deg,#132c40,#10202e);
+ border:1px solid var(--line);border-radius:10px;margin-bottom:15px;
+}
+.intro h2{font-size:17px;margin:0 0 8px}
+.intro p{font-size:12px;line-height:1.7;color:#b9cad8;margin:0}
+.grid{
+ display:grid;
+ grid-template-columns:270px minmax(0,1fr) 300px;
+ gap:13px;align-items:stretch;
+}
+.panel{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:9px;overflow:hidden;min-width:0;
+}
+.panel-title{
+ padding:13px 14px;border-bottom:1px solid var(--line);
+ font-size:11px;font-weight:bold;letter-spacing:1.1px;
+ color:var(--cyan);
+}
+.panel-body{padding:13px}
+.control-scroll{max-height:740px;overflow-y:auto}
+label{
+ display:block;font-size:11px;color:var(--muted);
+ margin:14px 0 6px;
+}
+select,input[type=date],input[type=file]{
+ width:100%;padding:10px;background:#0a1723;
+ border:1px solid var(--line);color:var(--text);
+ border-radius:5px;font-size:12px;
+}
+input[type=file]{font-size:10px}
+button{
+ border:1px solid var(--line);background:#1b3448;
+ color:white;padding:10px;border-radius:5px;
+ cursor:pointer;font-size:11px;font-weight:bold;
+}
+button:hover{border-color:var(--cyan)}
+.primary{background:#176176;border-color:#25879c}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px}
+#map{height:570px;width:100%;background:#08111b}
+.map-toolbar{
+ display:flex;flex-wrap:wrap;gap:8px;
+ padding:10px;border-bottom:1px solid var(--line);
+ align-items:center;
+}
+.map-toolbar span{font-size:10px;color:var(--muted)}
+.map-toolbar select{width:auto;min-width:130px}
+.map-foot{
+ padding:10px 13px;font-size:10px;color:var(--muted);
+ border-top:1px solid var(--line);
+}
+.kpis{
+ display:grid;grid-template-columns:repeat(4,1fr);
+ gap:10px;margin:14px 0;
+}
+.kpi{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:8px;padding:14px;
+}
+.kpi small{color:var(--muted);font-size:10px}
+.kpi strong{display:block;font-size:22px;margin-top:9px;color:var(--cyan)}
+.kpi em{font-size:10px;color:var(--muted);font-style:normal}
+.section{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:9px;margin-top:13px;padding:15px;
+}
+.section h3{font-size:12px;color:var(--cyan);margin:0 0 13px}
+.chart-wrap{height:260px;position:relative}
+.insight{
+ padding:12px;background:#152b3a;border-left:3px solid var(--gold);
+ margin:10px 0;border-radius:3px;
+ font-size:11px;line-height:1.7;color:#d1dce5;
+}
+.warning{
+ padding:12px;background:#30281a;border:1px solid #69552c;
+ color:#f3dba3;border-radius:6px;font-size:11px;line-height:1.7;
+}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th,td{padding:10px;text-align:left;border-bottom:1px solid var(--line)}
+th{color:var(--cyan)}
+td{color:#c8d5df}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.legend span{font-size:10px;color:var(--muted)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+footer{
+ margin-top:18px;padding:17px;border-top:1px solid var(--line);
+ color:var(--muted);font-size:10px;line-height:1.8;text-align:center;
+}
+#message{font-size:10px;color:var(--gold);margin-top:9px;line-height:1.5}
+@media(max-width:1100px){
+ .grid{grid-template-columns:230px minmax(0,1fr)}
+ .right-panel{grid-column:1/-1}
+}
+@media(max-width:700px){
+ .grid{grid-template-columns:1fr}
+ .right-panel{grid-column:auto}
+ #map{height:450px}
+ .kpis{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+
+<body>
+<header>
+ <div class="brand">
+  <div class="logo">G</div>
+  <div>
+   <h1>GBoS GEOAI | NIGHT-TIME LIGHT INTELLIGENCE</h1>
+   <div class="subtitle">GAMBIA • SATELLITE ILLUMINATION • POPULATION • SOCIOECONOMIC GEOGRAPHY</div>
+  </div>
+ </div>
+ <div class="status" id="connection">● INITIALISING DATA SERVICES</div>
+</header>
+
+<main>
+
+<div class="intro">
+ <h2>Reading The Gambia Through Night-Time Lights</h2>
+ <p>
+ Night-time satellite observations provide an additional perspective
+ on human settlement, electrification, infrastructure and spatial
+ development. This dashboard explores the distribution of artificial
+ illumination across The Gambia using VIIRS satellite imagery.
+ However, brightness is not a direct measurement of GDP, household
+ wealth or quality of life. Interpretation requires demographic,
+ cultural, economic and geographic context.
+ </p>
+</div>
+
+<div class="grid">
+
+<!-- LEFT: CONTROLS -->
+<section class="panel">
+ <div class="panel-title">01 / ANALYSIS CONTROLS</div>
+ <div class="panel-body control-scroll">
+
+  <label>ADMINISTRATIVE REGION</label>
+  <select id="region">
+   <option value="all">All The Gambia</option>
+  </select>
+
+  <label>ADMINISTRATIVE DISTRICT</label>
+  <select id="district">
+   <option value="all">All districts</option>
+  </select>
+
+  <label>OBSERVATION DATE</label>
+  <input type="date" id="obsDate">
+
+  <label>SATELLITE DISPLAY</label>
+  <select id="satellite">
+   <option value="encc">VIIRS Day/Night Band - ENCC</option>
+  </select>
+
+  <label>MAP BASEMAP</label>
+  <select id="basemap">
+   <option value="dark">Dark Cartographic</option>
+   <option value="street">OpenStreetMap</option>
+   <option value="satellite">Satellite</option>
+   <option value="terrain">Terrain</option>
+  </select>
+
+  <label>NIGHTLIGHT OPACITY</label>
+  <input id="opacity" type="range" min="0" max="100" value="90" style="width:100%">
+
+  <label>BOUNDARY LEVEL</label>
+  <select id="boundaryLevel">
+   <option value="ADM1">Administrative regions</option>
+   <option value="ADM2">Administrative districts</option>
+  </select>
+
+  <label>OPTIONAL: UPLOAD VIIRS RADIANCE CSV</label>
+  <input type="file" id="csvFile" accept=".csv">
+
+  <div class="insight">
+   <b>Quantitative data requirements</b><br>
+   Upload a zonal statistics CSV to calculate actual regional
+   mean radiance and compare administrative areas.
+   Satellite display imagery alone does not provide calibrated
+   radiance statistics.
+  </div>
+
+  <div class="actions">
+   <button class="primary" onclick="applySelection()">APPLY FILTER</button>
+   <button onclick="resetDashboard()">RESET</button>
+   <button onclick="exportCSV()">EXPORT CSV</button>
+   <button onclick="exportGeoJSON()">EXPORT BOUNDARIES</button>
+  </div>
+
+  <div id="message">Waiting for administrative boundaries.</div>
+
+  <div class="section" style="padding:10px">
+   <h3>DATA SOURCES</h3>
+   <div style="font-size:10px;line-height:2;color:var(--muted)">
+    • NASA GIBS / VIIRS<br>
+    • geoBoundaries<br>
+    • Uploaded GBoS statistics<br>
+    • Independent population data (optional)
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- CENTRE: MAP -->
+<section class="panel">
+ <div class="panel-title">02 / INTERACTIVE NIGHTLIGHT MAP</div>
+ <div class="map-toolbar">
+  <span>VISIBLE LIGHT OBSERVATIONS</span>
+  <span id="mapDate">DATE: --</span>
+  <span id="areaLabel">AREA: NATIONAL</span>
+ </div>
+ <div id="map"></div>
+ <div class="map-foot">
+  VIIRS Day/Night Band • NASA GIBS • Daily imagery • Display product,
+  not a calibrated socioeconomic measurement.
+ </div>
+</section>
+
+<!-- RIGHT: ANALYTICS -->
+<section class="panel right-panel">
+ <div class="panel-title">03 / SPATIAL INTERPRETATION</div>
+ <div class="panel-body">
+
+  <h3 style="font-size:12px;color:var(--gold)">Selected geography</h3>
+  <div id="selectedArea" style="font-size:17px;font-weight:bold">
+   The Gambia
+  </div>
+
+  <div class="insight">
+   <b>What does brightness indicate?</b><br>
+   Persistent artificial illumination can indicate
+   electricity infrastructure, commercial activities,
+   population concentration and built-up environments.
+  </div>
+
+  <h3 style="font-size:11px;margin-top:20px">INTERPRETATION CHECKLIST</h3>
+
+  <div style="font-size:11px;line-height:2.1;color:#bdcbd7">
+   <div>✓ Urban concentration</div>
+   <div>✓ Electricity access patterns</div>
+   <div>✓ Commercial activity</div>
+   <div>✓ Settlement distribution</div>
+   <div>✓ Spatial development differences</div>
+  </div>
+
+  <div class="warning" style="margin-top:17px">
+   <b>Critical remote sensing</b><br><br>
+   A dark area is not necessarily poor.
+   A bright area is not necessarily wealthy.
+   Consider settlement density, electricity
+   supply, industrial facilities, cultural practices,
+   lighting behaviour and land-use patterns.
+  </div>
+
+  <div style="margin-top:18px">
+   <h3 style="font-size:11px">DATA QUALITY</h3>
+   <div id="dataStatus" style="font-size:10px;color:var(--muted);line-height:1.9">
+    Boundaries: Loading<br>
+    Satellite: Initialising<br>
+    Radiance statistics: Not uploaded
+   </div>
+  </div>
+ </div>
+</section>
+</div>
+
+<!-- KPI -->
+<div class="kpis">
+ <div class="kpi">
+  <small>ADMINISTRATIVE FEATURES</small>
+  <strong id="kpiAreas">--</strong>
+  <em>Loaded geographic units</em>
+ </div>
+ <div class="kpi">
+  <small>REGION SELECTED</small>
+  <strong id="kpiRegion" style="font-size:16px">National</strong>
+  <em>Current selection</em>
+ </div>
+ <div class="kpi">
+  <small>MEAN NIGHTLIGHT RADIANCE</small>
+  <strong id="kpiRadiance">N/A</strong>
+  <em>Requires calibrated radiance CSV</em>
+ </div>
+ <div class="kpi">
+  <small>RADIANCE DATA RECORDS</small>
+  <strong id="kpiRecords">0</strong>
+  <em>Uploaded observations</em>
+ </div>
+</div>
+
+<!-- CHARTS -->
+<div class="section">
+ <h3>04 / REGIONAL NIGHTLIGHT COMPARISON</h3>
+ <div class="chart-wrap">
+  <canvas id="radianceChart"></canvas>
+ </div>
+ <div id="chartMessage" style="font-size:10px;color:var(--muted);margin-top:10px">
+  No quantitative radiance dataset uploaded.
+  Upload actual zonal statistics to generate a regional comparison.
+ </div>
+</div>
+
+<div class="section">
+ <h3>05 / ADMINISTRATIVE NIGHTLIGHT STATISTICS</h3>
+ <div style="overflow-x:auto">
+  <table>
+   <thead>
+    <tr>
+     <th>Administrative area</th>
+     <th>Mean radiance</th>
+     <th>Maximum radiance</th>
+     <th>Lit pixels</th>
+     <th>Data status</th>
+    </tr>
+   </thead>
+   <tbody id="statsTable">
+    <tr><td colspan="5">Upload quantitative VIIRS statistics to populate this table.</td></tr>
+   </tbody>
+  </table>
+ </div>
+</div>
+
+<div class="section">
+ <h3>06 / CRITICAL REMOTE SENSING: THE GAMBIAN CONTEXT</h3>
+ <div class="insight">
+  <b>Greater Banjul Area</b><br>
+  Investigate whether concentrated illumination reflects
+  urban density, commercial activity, transport networks
+  and electricity infrastructure.
+ </div>
+ <div class="insight">
+  <b>Urban and peri-urban settlements</b><br>
+  Examine the transition between highly illuminated urban
+  centres and developing settlement corridors.
+ </div>
+ <div class="insight">
+  <b>Rural Gambia</b><br>
+  Lower illumination may reflect dispersed settlements,
+  agricultural land, lower infrastructure density or different
+  electricity and lighting patterns. It should not be interpreted
+  automatically as lower household welfare.
+ </div>
+ <div class="insight">
+  <b>Socioeconomic validation</b><br>
+  Compare radiance with census population, household
+  characteristics, electricity access, economic activity
+  and independently measured development indicators.
+ </div>
+</div>
+
+<footer>
+ <b>GBoS GEOAI | GAMBIA NIGHT-TIME LIGHT & SOCIOECONOMIC INTELLIGENCE</b><br>
+ Produced by Ansu Singhateh | GIS Analyst | GIS / Cartography Unit |
+ Gambia Bureau of Statistics<br>
+ GBoS GEOAI • Research and educational use<br>
+ Satellite imagery: NASA/NOAA VIIRS • NASA GIBS • Administrative boundaries: geoBoundaries
+</footer>
+
+</main>
+
+<script>
+// =============================================
+// 1. NATIONAL STUDY AREA
+// =============================================
+
+const GAMBIA = {
+ center:[13.45,-15.45],
+ bounds:[[13.04,-16.85],[13.85,-13.78]]
+};
+
+let boundaries = null;
+let boundaryLayer = null;
+let selectedFeature = null;
+let radianceData = [];
+let chart = null;
+let currentBase = null;
+let lightLayer = null;
+
+const map = L.map('map',{
+ center:GAMBIA.center,
+ zoom:8,
+ minZoom:6,
+ maxZoom:15
+});
+
+const basemaps = {
+ dark:L.tileLayer(
+  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  {attribution:'© CARTO © OpenStreetMap'}
+ ),
+ street:L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {attribution:'© OpenStreetMap'}
+ ),
+ satellite:L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  {attribution:'Esri'}
+ ),
+ terrain:L.tileLayer(
+  'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+  {attribution:'OpenTopoMap'}
+ )
+};
+
+function setBase(name){
+ if(currentBase) map.removeLayer(currentBase);
+ currentBase=basemaps[name] || basemaps.dark;
+ currentBase.addTo(map);
+ if(lightLayer) lightLayer.bringToFront();
+ if(boundaryLayer) boundaryLayer.bringToFront();
+}
+
+setBase('dark');
+map.fitBounds(GAMBIA.bounds);
+
+// =============================================
+// 2. NASA GIBS VIIRS NIGHTTIME IMAGERY
+// =============================================
+
+function defaultObservationDate(){
+ const d=new Date();
+ d.setUTCDate(d.getUTCDate()-3);
+ return d.toISOString().slice(0,10);
+}
+
+document.getElementById('obsDate').value=defaultObservationDate();
+
+function loadNightlight(){
+ const date=document.getElementById('obsDate').value;
+ if(!date)return;
+
+ if(lightLayer)map.removeLayer(lightLayer);
+
+ const url=
+ 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/' +
+ 'VIIRS_SNPP_DayNightBand_ENCC/default/' +
+ date +
+ '/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png';
+
+ lightLayer=L.tileLayer(url,{
+  opacity:Number(document.getElementById('opacity').value)/100,
+  maxNativeZoom:9,
+  maxZoom:15,
+  attribution:'NASA GIBS / NOAA VIIRS',
+  crossOrigin:true
+ });
+
+ lightLayer.on('tileerror',function(){
+  document.getElementById('message').textContent=
+   'Some satellite tiles are unavailable for this date or zoom. Try another observation date.';
+ });
+
+ lightLayer.addTo(map);
+
+ document.getElementById('mapDate').textContent='DATE: '+date;
+ document.getElementById('dataStatus').innerHTML=
+ 'Boundaries: '+(boundaries?'Loaded':'Loading')+
+ '<br>Satellite: VIIRS imagery requested<br>'+
+ 'Radiance statistics: '+(radianceData.length?'Uploaded':'Not uploaded');
+
+ document.getElementById('connection').textContent='● NASA IMAGERY REQUESTED';
+}
+
+document.getElementById('obsDate').addEventListener('change',loadNightlight);
+
+document.getElementById('opacity').addEventListener('input',e=>{
+ if(lightLayer)lightLayer.setOpacity(Number(e.target.value)/100);
+});
+
+document.getElementById('basemap').addEventListener('change',e=>{
+ setBase(e.target.value);
+});
+
+// =============================================
+// 3. LOAD GAMBIA ADMINISTRATIVE BOUNDARIES
+// =============================================
+
+const boundaryURLs={
+ ADM1:'https://www.geoboundaries.org/api/current/gbOpen/GMB/ADM1/',
+ ADM2:'https://www.geoboundaries.org/api/current/gbOpen/GMB/ADM2/'
+};
+
+function getProperties(f){
+ return f.properties || {};
+}
+
+function findProperty(properties,terms){
+ const keys=Object.keys(properties);
+ for(const term of terms){
+  const found=keys.find(k=>k.toLowerCase()===term.toLowerCase());
+  if(found)return properties[found];
+ }
+ return null;
+}
+
+function featureName(f){
+ const p=getProperties(f);
+ return String(
+  findProperty(p,['shapeName','NAME_1','NAME_2','name','ADM1_NAME','ADM2_NAME']) ||
+  'Unnamed area'
+ );
+}
+
+function loadBoundaries(level='ADM1'){
+ document.getElementById('message').textContent=
+  'Loading administrative boundaries...';
+
+ const url=boundaryURLs[level];
+
+ fetch(url)
+ .then(r=>{
+  if(!r.ok)throw new Error('Boundary API returned '+r.status);
+  return r.json();
+ })
+ .then(meta=>{
+  if(!meta.gjDownloadURL)throw new Error('No GeoJSON download URL found');
+  return fetch(meta.gjDownloadURL);
+ })
+ .then(r=>{
+  if(!r.ok)throw new Error('GeoJSON download failed');
+  return r.json();
+ })
+ .then(data=>{
+  boundaries=data;
+  drawBoundaries();
+  populateSelectors();
+  document.getElementById('connection').textContent='● BOUNDARIES LOADED';
+  document.getElementById('message').textContent=
+   level+' boundaries successfully loaded.';
+  document.getElementById('dataStatus').innerHTML=
+   'Boundaries: Loaded ('+data.features.length+' features)<br>'+
+   'Satellite: VIIRS imagery requested<br>'+
+   'Radiance statistics: '+(radianceData.length?'Uploaded':'Not uploaded');
+ })
+ .catch(err=>{
+  document.getElementById('message').textContent=
+   'Boundary service unavailable: '+err.message+
+   '. Check internet connectivity.';
+  document.getElementById('connection').textContent='● BOUNDARY ERROR';
+ });
+}
+
+function drawBoundaries(){
+ if(boundaryLayer)map.removeLayer(boundaryLayer);
+
+ const region=document.getElementById('region').value;
+ const district=document.getElementById('district').value;
+
+ let filtered=boundaries.features.filter(f=>{
+  const n=featureName(f);
+  const p=getProperties(f);
+
+  if(region!=='all'){
+   const regionName=String(
+    findProperty(p,['shapeName','NAME_1','ADM1_NAME'])||n
+   );
+   if(regionName!==region && !n.includes(region))return false;
+  }
+
+  if(district!=='all' && n!==district)return false;
+  return true;
+ });
+
+ const fc={type:'FeatureCollection',features:filtered};
+
+ boundaryLayer=L.geoJSON(fc,{
+  style:f=>({
+   color:'#40c4d8',
+   weight:1.5,
+   opacity:0.95,
+   fillColor:'#40c4d8',
+   fillOpacity:0.04
+  }),
+  onEachFeature:(f,layer)=>{
+   const name=featureName(f);
+   layer.bindPopup(
+    '<b>'+escapeHTML(name)+'</b><br>'+
+    'Administrative boundary<br>'+
+    'Select the geographic area using the controls.'
+   );
+   layer.on('mouseover',function(){
+    this.setStyle({weight:3,fillOpacity:0.16});
+   });
+   layer.on('mouseout',function(){
+    boundaryLayer.resetStyle(this);
+   });
+   layer.on('click',function(){
+    document.getElementById('selectedArea').textContent=name;
+   });
+  }
+ }).addTo(map);
+
+ document.getElementById('kpiAreas').textContent=filtered.length;
+
+ if(filtered.length){
+  map.fitBounds(boundaryLayer.getBounds(),{padding:[20,20]});
+ }else{
+  map.fitBounds(GAMBIA.bounds);
+ }
+}
+
+function populateSelectors(){
+ const regionSelect=document.getElementById('region');
+ const districtSelect=document.getElementById('district');
+
+ const regions=[...new Set(boundaries.features.map(featureName))].sort();
+
+ regionSelect.innerHTML='<option value="all">All The Gambia</option>';
+
+ regions.forEach(n=>{
+  regionSelect.add(new Option(n,n));
+ });
+
+ districtSelect.innerHTML='<option value="all">All districts</option>';
+ drawBoundaries();
+}
+
+document.getElementById('boundaryLevel').addEventListener('change',e=>{
+ document.getElementById('region').value='all';
+ document.getElementById('district').value='all';
+ loadBoundaries(e.target.value);
+});
+
+document.getElementById('region').addEventListener('change',()=>{
+ document.getElementById('district').value='all';
+ applySelection();
+});
+
+document.getElementById('district').addEventListener('change',applySelection);
+
+function applySelection(){
+ if(!boundaries)return;
+
+ drawBoundaries();
+
+ const region=document.getElementById('region').value;
+ const district=document.getElementById('district').value;
+
+ const label=district!=='all'?district:
+ region!=='all'?region:'All The Gambia';
+
+ document.getElementById('selectedArea').textContent=label;
+ document.getElementById('areaLabel').textContent='AREA: '+label.toUpperCase();
+ document.getElementById('kpiRegion').textContent=label;
+}
+
+// =============================================
+// 4. CSV DATA IMPORT
+// Expected fields:
+// area, mean_radiance, max_radiance, lit_pixels
+// =============================================
+
+document.getElementById('csvFile').addEventListener('change',function(e){
+ const file=e.target.files[0];
+ if(!file)return;
+
+ Papa.parse(file,{
+  header:true,
+  skipEmptyLines:true,
+  complete:results=>{
+   const rows=results.data;
+
+   const normalize=s=>String(s||'').trim().toLowerCase();
+
+   const aliases={
+    area:['area','region','district','name','admin_name','shapeName'],
+    mean:['mean_radiance','mean','avg_radiance','average_radiance'],
+    max:['max_radiance','maximum_radiance','max'],
+    lit:['lit_pixels','litpixel','lit_count','lit_cells']
+   };
+
+   const keys=Object.keys(rows[0]||{});
+   const findKey=list=>keys.find(k=>list.includes(normalize(k)));
+
+   const areaKey=findKey(aliases.area);
+   const meanKey=findKey(aliases.mean);
+   const maxKey=findKey(aliases.max);
+   const litKey=findKey(aliases.lit);
+
+   if(!areaKey || !meanKey){
+    alert('CSV must contain an area/name column and a mean_radiance column.');
+    return;
+   }
+
+   radianceData=rows.map(r=>({
+    area:String(r[areaKey]||'').trim(),
+    mean:Number(r[meanKey]),
+    max:maxKey?Number(r[maxKey]):null,
+    lit:litKey?Number(r[litKey]):null
+   })).filter(r=>r.area && Number.isFinite(r.mean));
+
+   updateAnalytics();
+   document.getElementById('message').textContent=
+    radianceData.length+' quantitative records imported successfully.';
+  },
+  error:err=>alert('CSV error: '+err.message)
+ });
+});
+
+// =============================================
+// 5. ANALYTICS
+// =============================================
+
+function updateAnalytics(){
+ document.getElementById('kpiRecords').textContent=radianceData.length;
+
+ const mean=radianceData.length?
+  radianceData.reduce((s,r)=>s+r.mean,0)/radianceData.length:0;
+
+ document.getElementById('kpiRadiance').textContent=
+  radianceData.length?mean.toFixed(3):'N/A';
+
+ const labels=radianceData.map(r=>r.area);
+ const values=radianceData.map(r=>r.mean);
+
+ if(chart)chart.destroy();
+
+ chart=new Chart(document.getElementById('radianceChart'),{
+  type:'bar',
+  data:{
+   labels:labels,
+   datasets:[{
+    label:'Mean VIIRS radiance (nW/cm²/sr)',
+    data:values,
+    backgroundColor:'#40c4d8',
+    borderColor:'#40c4d8',
+    borderWidth:1
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   plugins:{
+    legend:{labels:{color:'#c5d3df'}},
+    tooltip:{enabled:true}
+   },
+   scales:{
+    x:{ticks:{color:'#aab9c7'},grid:{color:'#263b4c'}},
+    y:{
+     beginAtZero:true,
+     title:{
+      display:true,
+      text:'Mean radiance (nW/cm²/sr)',
+      color:'#aab9c7'
+     },
+     ticks:{color:'#aab9c7'},
+     grid:{color:'#263b4c'}
+    }
+   }
+  }
+ });
+
+ document.getElementById('chartMessage').textContent=
+  'Comparison based on '+radianceData.length+
+  ' uploaded administrative radiance records.';
+
+ const tbody=document.getElementById('statsTable');
+ tbody.innerHTML='';
+
+ radianceData.forEach(r=>{
+  const tr=document.createElement('tr');
+  [r.area,
+   r.mean.toFixed(4),
+   r.max===null?'N/A':r.max.toFixed(4),
+   r.lit===null?'N/A':r.lit,
+   'Uploaded'
+  ].forEach(v=>{
+   const td=document.createElement('td');
+   td.textContent=v;
+   tr.appendChild(td);
+  });
+  tbody.appendChild(tr);
+ });
+
+ document.getElementById('dataStatus').innerHTML=
+  'Boundaries: '+(boundaries?'Loaded':'Pending')+
+  '<br>Satellite: VIIRS display imagery requested'+
+  '<br>Radiance statistics: '+radianceData.length+' records uploaded';
+}
+
+// =============================================
+// 6. EXPORT
+// =============================================
+
+function exportCSV(){
+ if(!radianceData.length){
+  alert('Upload quantitative radiance statistics first.');
+  return;
+ }
+
+ const csv=Papa.unparse(radianceData.map(r=>({
+  area:r.area,
+  mean_radiance:r.mean,
+  max_radiance:r.max,
+  lit_pixels:r.lit
+ })));
+
+ downloadFile(csv,'Gambia_Nightlight_Statistics.csv','text/csv');
+}
+
+function exportGeoJSON(){
+ if(!boundaries){
+  alert('Administrative boundaries have not loaded.');
+  return;
+ }
+ downloadFile(
+  JSON.stringify(boundaries,null,2),
+  'Gambia_Administrative_Boundaries.geojson',
+  'application/geo+json'
+ );
+}
+
+function downloadFile(content,name,type){
+ const blob=new Blob([content],{type:type});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;
+ a.download=name;
+ a.click();
+ URL.revokeObjectURL(url);
+}
+
+// =============================================
+// 7. RESET
+// =============================================
+
+function resetDashboard(){
+ document.getElementById('region').value='all';
+ document.getElementById('district').value='all';
+ document.getElementById('obsDate').value=defaultObservationDate();
+ document.getElementById('basemap').value='dark';
+ document.getElementById('opacity').value=90;
+ document.getElementById('boundaryLevel').value='ADM1';
+ document.getElementById('csvFile').value='';
+
+ radianceData=[];
+ if(chart){chart.destroy();chart=null;}
+
+ document.getElementById('kpiRadiance').textContent='N/A';
+ document.getElementById('kpiRecords').textContent='0';
+ document.getElementById('kpiRegion').textContent='National';
+ document.getElementById('selectedArea').textContent='The Gambia';
+ document.getElementById('areaLabel').textContent='AREA: NATIONAL';
+
+ document.getElementById('statsTable').innerHTML=
+  '<tr><td colspan="5">No quantitative data uploaded.</td></tr>';
+
+ document.getElementById('chartMessage').textContent=
+  'Upload quantitative radiance statistics to generate comparisons.';
+
+ setBase('dark');
+ loadNightlight();
+
+ if(boundaries)drawBoundaries();
+ map.fitBounds(GAMBIA.bounds);
+}
+
+// =============================================
+// 8. SECURITY AND STARTUP
+// =============================================
+
+function escapeHTML(value){
+ return String(value).replace(/[&<>"']/g,c=>({
+  '&':'&amp;','<':'&lt;','>':'&gt;',
+  '"':'&quot;',"'":'&#39;'
+ }[c]));
+}
+
+loadNightlight();
+loadBoundaries('ADM1');
+
+</script>
+</body>
+</html>
