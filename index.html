@@ -10,229 +10,404 @@
 
 <style>
 :root{
-  --bg:#07111f;--panel:#101e30;--panel2:#14263b;
-  --line:#263c53;--text:#e8f0f8;--muted:#91a6bb;
-  --accent:#43c6ac;--blue:#4e9cff;--orange:#ffb45b;
+ --bg:#07111f;
+ --panel:#101e30;
+ --panel2:#14263b;
+ --line:#263c53;
+ --text:#e8f0f8;
+ --muted:#91a6bb;
+ --accent:#43c6ac;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);
-  font-family:Arial,Helvetica,sans-serif}
-header{padding:17px 22px;background:#0b1929;border-bottom:1px solid var(--line)}
-.brand{font-size:12px;color:var(--accent);font-weight:bold;letter-spacing:2px}
-header h1{font-size:23px;margin:7px 0}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,Helvetica,sans-serif
+}
+header{
+ padding:16px 22px;background:#0b1929;
+ border-bottom:1px solid var(--line)
+}
+.brand{
+ font-size:11px;color:var(--accent);
+ font-weight:bold;letter-spacing:2px
+}
+header h1{font-size:22px;margin:7px 0}
 header p{font-size:12px;color:var(--muted);margin:0}
+
 .layout{
- display:grid;grid-template-columns:290px minmax(350px,1fr) 320px;
- gap:10px;padding:10px;height:calc(100vh - 100px);min-height:560px
+ display:grid;
+ grid-template-columns:285px minmax(350px,1fr) 325px;
+ gap:10px;padding:10px;
+ height:calc(100vh - 100px);min-height:600px
 }
-.panel{background:var(--panel);border:1px solid var(--line);
- border-radius:9px;overflow:auto;min-height:0}
-.panel-section{padding:14px;border-bottom:1px solid var(--line)}
-.section-title{font-size:11px;color:var(--accent);font-weight:bold;
- letter-spacing:1.2px;margin-bottom:12px}
-label{display:block;font-size:11px;color:var(--muted);margin:12px 0 5px}
+.panel{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:8px;overflow-y:auto;min-height:0
+}
+.panel-section{
+ padding:13px;border-bottom:1px solid var(--line)
+}
+.section-title{
+ font-size:11px;color:var(--accent);
+ font-weight:bold;letter-spacing:1.1px;margin-bottom:12px
+}
+label{
+ display:block;font-size:11px;color:var(--muted);
+ margin:11px 0 5px
+}
 select,input,button{
- width:100%;padding:10px;background:#0b1929;color:var(--text);
- border:1px solid #30465e;border-radius:5px;font-size:12px
+ width:100%;padding:9px;background:#0b1929;
+ color:var(--text);border:1px solid #30465e;
+ border-radius:5px;font-size:12px
 }
-button{cursor:pointer;font-weight:bold;margin-top:9px}
+button{
+ cursor:pointer;font-weight:bold;margin-top:8px
+}
 button.primary{background:#126d62;border-color:#198d7e}
 button.secondary{background:#18334e}
-button:hover{filter:brightness(1.2)}
-small,.muted{color:var(--muted);font-size:11px;line-height:1.5}
-#map{height:100%;width:100%;background:#0b1929}
-.map-panel{position:relative;overflow:hidden;border:1px solid var(--line);
- border-radius:9px;min-height:0}
+button:hover{filter:brightness(1.15)}
+button:disabled{opacity:.5;cursor:not-allowed}
+small,.muted{
+ color:var(--muted);font-size:10px;line-height:1.5
+}
+.map-panel{
+ position:relative;overflow:hidden;
+ border:1px solid var(--line);border-radius:8px;
+ min-width:0;min-height:0
+}
+#map{height:100%;width:100%;background:#101923}
 .map-top{
  position:absolute;z-index:500;top:12px;left:12px;
- background:#0b1929eF;border:1px solid #344b62;
- border-radius:6px;padding:10px 12px;font-size:11px;max-width:270px;
- pointer-events:none
+ background:#0b1929ed;border:1px solid #344b62;
+ border-radius:6px;padding:10px 12px;
+ font-size:11px;max-width:320px;
+ pointer-events:none;line-height:1.6
 }
 .map-top strong{color:var(--accent)}
-.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;
- background:var(--accent);margin-right:6px}
-.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.kpi{background:var(--panel2);padding:11px;border-radius:6px}
+.status-dot{
+ display:inline-block;width:8px;height:8px;
+ border-radius:50%;background:var(--accent);
+ margin-right:6px
+}
+.kpi-grid{
+ display:grid;grid-template-columns:1fr 1fr;gap:8px
+}
+.kpi{
+ background:var(--panel2);padding:10px;
+ border-radius:6px;min-width:0
+}
 .kpi .name{font-size:10px;color:var(--muted)}
-.kpi .value{font-size:19px;font-weight:bold;margin-top:6px}
+.kpi .value{
+ font-size:19px;font-weight:bold;
+ margin-top:6px;overflow-wrap:anywhere
+}
 .kpi .unit{font-size:10px;color:var(--muted)}
-.info{font-size:11px;line-height:1.6;color:var(--muted)}
-#selectedProperties{font-size:11px;line-height:1.7;overflow-wrap:anywhere}
-.legend{display:flex;align-items:center;gap:8px;font-size:11px;margin-top:8px}
-.legend-swatch{width:18px;height:10px;background:#ffd56a;border-radius:2px}
-footer{padding:10px 18px;border-top:1px solid var(--line);
- color:var(--muted);font-size:10px;text-align:center}
-@media(max-width:1000px){
+.info{
+ font-size:11px;line-height:1.6;
+ color:var(--muted);overflow-wrap:anywhere
+}
+.legend-title{
+ font-size:11px;font-weight:bold;margin-bottom:9px
+}
+.color-ramp{
+ height:15px;border-radius:4px;
+ background:linear-gradient(to right,
+ #09051f 0%,
+ #32106b 12%,
+ #2537b7 25%,
+ #087fca 38%,
+ #05c5c4 50%,
+ #36d66b 62%,
+ #d4e52b 74%,
+ #ffad19 85%,
+ #ef3b20 94%,
+ #fff5cf 100%);
+ border:1px solid #ffffff30
+}
+.legend-values{
+ display:flex;justify-content:space-between;
+ font-size:9px;color:var(--muted);margin-top:5px
+}
+.legend-note{font-size:10px;color:var(--muted);margin-top:7px}
+.chart-wrap{
+ position:relative;height:205px;width:100%;margin-top:8px
+}
+.chart-wrap.tall{height:225px}
+.chart-caption{
+ font-size:10px;color:var(--muted);margin-top:7px;
+ line-height:1.5
+}
+.stat-table{
+ width:100%;border-collapse:collapse;font-size:11px
+}
+.stat-table td{
+ padding:7px 4px;border-bottom:1px solid #263c53
+}
+.stat-table td:last-child{text-align:right;color:#e8f0f8;font-weight:bold}
+#tileDiagnostics{font-size:10px;line-height:1.6;overflow-wrap:anywhere}
+footer{
+ padding:10px;border-top:1px solid var(--line);
+ text-align:center;color:var(--muted);font-size:10px
+}
+@media(max-width:1050px){
  .layout{grid-template-columns:260px minmax(300px,1fr)}
- .right-panel{grid-column:1 / -1;max-height:360px}
+ .right-panel{grid-column:1/-1;max-height:650px}
 }
 @media(max-width:700px){
  header h1{font-size:18px}
  .layout{display:flex;flex-direction:column;height:auto}
- .panel{max-height:420px}
- .map-panel{height:65vh;min-height:420px;order:2}
+ .panel{max-height:450px}
+ .map-panel{height:65vh;min-height:430px;order:2}
  .right-panel{order:3}
 }
 </style>
 </head>
 
 <body>
+
 <header>
  <div class="brand">GBoS GEOAI • SILKYGEO</div>
  <h1>Gambia Nighttime Light Intelligence</h1>
- <p>VIIRS Satellite Imagery • Administrative Selection • Spatial Light Analysis</p>
+ <p>VIIRS Satellite Imagery • Continuous Colour Rendering • Selected-Area Spatial Analytics</p>
 </header>
 
 <div class="layout">
 
- <!-- LEFT: CONTROLS -->
- <aside class="panel">
-  <div class="panel-section">
-   <div class="section-title">01 / GEOGRAPHIC SELECTION</div>
+<!-- =====================================================
+     LEFT: CONTROLS
+====================================================== -->
+<aside class="panel">
 
-   <label>Region</label>
-   <select id="regionSelect">
-    <option value="">Select region</option>
-   </select>
+ <div class="panel-section">
+  <div class="section-title">01 / GEOGRAPHIC SELECTION</div>
 
-   <label>District / LGA</label>
-   <select id="districtSelect" disabled>
-    <option value="">Select district</option>
-   </select>
+  <label>Region</label>
+  <select id="regionSelect">
+   <option value="">Select region</option>
+  </select>
 
-   <label>Ward</label>
-   <select id="wardSelect" disabled>
-    <option value="">Select ward</option>
-   </select>
+  <label>District / LGA</label>
+  <select id="districtSelect" disabled>
+   <option value="">Select district</option>
+  </select>
 
-   <label>Enumeration Area</label>
-   <select id="eaSelect" disabled>
-    <option value="">Select enumeration area</option>
-   </select>
+  <label>Ward</label>
+  <select id="wardSelect" disabled>
+   <option value="">Select ward</option>
+  </select>
 
-   <button class="primary" id="applyBtn">APPLY SELECTED AREA</button>
-   <button class="secondary" id="resetBtn">RESET SELECTION</button>
-   <p class="muted">Nighttime-light imagery is masked to the selected boundary. No imagery is displayed outside the selected polygon.</p>
+  <label>Enumeration Area</label>
+  <select id="eaSelect" disabled>
+   <option value="">Select enumeration area</option>
+  </select>
+
+  <button class="primary" id="applyBtn">APPLY SELECTED AREA</button>
+  <button class="secondary" id="resetBtn">RESET SELECTION</button>
+
+  <p class="muted">
+   Only imagery inside the selected boundary is displayed.
+   The area outside the selected polygon is transparent.
+  </p>
+ </div>
+
+ <div class="panel-section">
+  <div class="section-title">02 / SATELLITE IMAGERY</div>
+
+  <label>Observation date</label>
+  <input type="date" id="imageDate" value="2026-10-05" min="2016-11-30">
+
+  <label>Imagery opacity</label>
+  <input type="range" id="opacity" min="0" max="100" value="95">
+
+  <label>Colour rendering</label>
+  <select id="colourMode">
+   <option value="multicolour">Multicolour continuous</option>
+   <option value="thermal">Thermal / fire</option>
+   <option value="ocean">Blue–cyan–yellow</option>
+   <option value="inferno">Inferno</option>
+   <option value="grayscale">Grayscale</option>
+  </select>
+
+  <label>Basemap</label>
+  <select id="basemapSelect">
+   <option value="dark">Dark background</option>
+   <option value="street">Street map</option>
+   <option value="satellite">Satellite</option>
+   <option value="terrain">Terrain</option>
+  </select>
+
+  <button class="primary" id="refreshBtn">RELOAD COLOURED IMAGERY</button>
+  <button class="secondary" id="toggleBtn">HIDE / SHOW NIGHTTIME LIGHTS</button>
+ </div>
+
+ <div class="panel-section">
+  <div class="section-title">03 / CONTINUOUS COLOUR LEGEND</div>
+  <div class="legend-title">VIIRS image brightness index</div>
+  <div class="color-ramp" id="legendRamp"></div>
+  <div class="legend-values">
+   <span>0 • Very low</span>
+   <span>64</span>
+   <span>128</span>
+   <span>192</span>
+   <span>255 • High</span>
   </div>
+  <div class="legend-note">
+   Colour ramp represents the 8-bit image index, not calibrated
+   radiance in nW/cm²/sr.
+  </div>
+ </div>
 
-  <div class="panel-section">
-   <div class="section-title">02 / SATELLITE IMAGERY</div>
+ <div class="panel-section">
+  <div class="section-title">04 / BOUNDARY DATA</div>
+  <label>Upload GeoJSON boundary</label>
+  <input type="file" id="geojsonUpload" accept=".geojson,.json">
+  <div id="boundaryStatus" class="info" style="margin-top:8px">
+   Loading boundary data...
+  </div>
+ </div>
 
-   <label>VIIRS observation date</label>
-   <input type="date" id="imageDate" value="2026-10-05" min="2016-11-30">
+ <div class="panel-section">
+  <div class="section-title">05 / NASA TILE DIAGNOSTICS</div>
+  <div id="tileDiagnostics" class="info">
+   Waiting for selected area.
+  </div>
+ </div>
 
-   <label>Imagery opacity</label>
-   <input type="range" id="opacity" min="0" max="100" value="95">
+</aside>
 
-   <label>Basemap</label>
-   <select id="basemapSelect">
-    <option value="dark">Dark background</option>
-    <option value="street">Street map</option>
-    <option value="satellite">Satellite</option>
-    <option value="terrain">Terrain</option>
-   </select>
+<!-- =====================================================
+     CENTRE: MAP
+====================================================== -->
+<main class="map-panel">
+ <div id="map"></div>
+ <div class="map-top">
+  <div><span class="status-dot"></span><strong>COLOURED VIIRS NIGHTTIME LIGHTS</strong></div>
+  <div id="mapSelectionLabel">No area selected</div>
+  <div id="tileStatus">Select an area to display imagery</div>
+ </div>
+</main>
 
-   <button class="primary" id="refreshBtn">REFRESH CLIPPED IMAGERY</button>
-   <button class="secondary" id="toggleBtn">HIDE / SHOW NIGHTTIME LIGHTS</button>
+<!-- =====================================================
+     RIGHT: ANALYTICS
+====================================================== -->
+<aside class="panel right-panel">
 
-   <div class="legend">
-    <span class="legend-swatch"></span>
-    <span>VIIRS nighttime-light imagery</span>
+ <div class="panel-section">
+  <div class="section-title">06 / SELECTED AREA INDICATORS</div>
+  <div class="kpi-grid">
+
+   <div class="kpi">
+    <div class="name">Selected features</div>
+    <div class="value" id="featureCount">0</div>
+    <div class="unit">Boundary features</div>
    </div>
-  </div>
 
-  <div class="panel-section">
-   <div class="section-title">03 / BOUNDARY DATA</div>
-   <label>Upload boundary GeoJSON (optional)</label>
-   <input type="file" id="geojsonUpload" accept=".geojson,.json">
-   <p class="muted">Default boundary source: Gambia Census Enumeration Areas.</p>
-   <div id="boundaryStatus" class="info">Loading administrative boundaries...</div>
-  </div>
-
-  <div class="panel-section">
-   <div class="section-title">04 / DATA SOURCE</div>
-   <div class="info">
-    Satellite: NASA VIIRS Suomi-NPP Day/Night Band Enhanced Color.<br>
-    Service: NASA GIBS WMTS.<br>
-    Boundary: Census_EAs_Geo.json.
+   <div class="kpi">
+    <div class="name">Boundary area</div>
+    <div class="value" id="areaValue">—</div>
+    <div class="unit">km²</div>
    </div>
-  </div>
- </aside>
 
- <!-- CENTRE: MAP -->
- <main class="map-panel">
-  <div id="map"></div>
-  <div class="map-top">
-   <div><span class="status-dot"></span><strong>SELECTED AREA IMAGERY MASK</strong></div>
-   <div id="mapSelectionLabel" style="margin-top:6px">No area selected</div>
-   <div id="tileStatus" style="margin-top:5px;color:#91a6bb">Waiting for selection</div>
-  </div>
- </main>
-
- <!-- RIGHT: ANALYTICS -->
- <aside class="panel right-panel">
-  <div class="panel-section">
-   <div class="section-title">05 / SELECTED AREA INDICATORS</div>
-   <div class="kpi-grid">
-    <div class="kpi">
-     <div class="name">Selected boundary features</div>
-     <div class="value" id="featureCount">0</div>
-     <div class="unit">Features</div>
-    </div>
-    <div class="kpi">
-     <div class="name">Boundary area</div>
-     <div class="value" id="areaValue">—</div>
-     <div class="unit">Approx. km²</div>
-    </div>
-    <div class="kpi">
-     <div class="name">Imagery status</div>
-     <div class="value" id="imageryStatus" style="font-size:14px">Waiting</div>
-     <div class="unit">NASA GIBS tiles</div>
-    </div>
-    <div class="kpi">
-     <div class="name">Selection level</div>
-     <div class="value" id="selectionLevel" style="font-size:14px">None</div>
-     <div class="unit">Administrative level</div>
-    </div>
+   <div class="kpi">
+    <div class="name">Mean brightness index</div>
+    <div class="value" id="meanValue">—</div>
+    <div class="unit">0–255 • Loaded pixels</div>
    </div>
-  </div>
 
-  <div class="panel-section">
-   <div class="section-title">06 / SELECTED AREA DETAILS</div>
-   <div id="selectedProperties" class="info">
-    Select a region, district, ward or enumeration area to view its boundary details.
+   <div class="kpi">
+    <div class="name">Maximum index</div>
+    <div class="value" id="maxValue">—</div>
+    <div class="unit">0–255 • Loaded pixels</div>
    </div>
-  </div>
 
-  <div class="panel-section">
-   <div class="section-title">07 / RADIANCE STATISTICS</div>
-   <div class="info">
-    The displayed VIIRS GIBS imagery is a visual satellite layer. It is not a downloadable radiance raster for zonal statistics.
-    <br><br>
-    Mean radiance, maximum radiance and lit-pixel statistics are not calculated from the rendered map tiles. Upload a quantitative VIIRS raster or a verified zonal-statistics CSV to calculate those indicators.
+   <div class="kpi">
+    <div class="name">Lit pixel share</div>
+    <div class="value" id="litShare">—</div>
+    <div class="unit">Index greater than 1</div>
    </div>
-  </div>
 
-  <div class="panel-section">
-   <div class="section-title">08 / EXPORT SELECTED BOUNDARY</div>
-   <button class="primary" id="exportBtn">EXPORT SELECTED AREA GEOJSON</button>
-   <button class="secondary" id="exportAllBtn">EXPORT ALL BOUNDARIES</button>
-  </div>
-
-  <div class="panel-section">
-   <div class="section-title">09 / METHODOLOGY</div>
-   <div class="info">
-    1. Administrative boundaries are loaded from GeoJSON.<br>
-    2. The selected administrative polygon is used as the clipping mask.<br>
-    3. NASA VIIRS imagery tiles are rendered into browser canvas tiles.<br>
-    4. Pixels outside the selected polygon are made transparent.<br>
-    5. The mask is refreshed when the selected area or imagery date changes.
-    <br><br>
-    The displayed image is satellite visualization, not a substitute for calibrated radiance values.
+   <div class="kpi">
+    <div class="name">Sampled pixels</div>
+    <div class="value" id="pixelCount">0</div>
+    <div class="unit">Loaded clipped tiles</div>
    </div>
+
   </div>
- </aside>
+  <p class="muted" style="margin-top:10px">
+   Image-derived indicators are calculated from successfully loaded
+   clipped map tiles. They are not full-area calibrated radiance statistics.
+  </p>
+ </div>
+
+ <div class="panel-section">
+  <div class="section-title">07 / BRIGHTNESS DISTRIBUTION</div>
+  <div class="chart-wrap tall">
+   <canvas id="brightnessChart"></canvas>
+  </div>
+  <div class="chart-caption">
+   Number of sampled image pixels in each brightness-index interval.
+  </div>
+ </div>
+
+ <div class="panel-section">
+  <div class="section-title">08 / BRIGHTNESS CLASS COMPOSITION</div>
+  <div class="chart-wrap">
+   <canvas id="classChart"></canvas>
+  </div>
+  <div class="chart-caption">
+   Share of sampled pixels grouped into brightness classes.
+  </div>
+ </div>
+
+ <div class="panel-section">
+  <div class="section-title">09 / IMAGE STATISTICS</div>
+  <table class="stat-table">
+   <tr><td>Mean index</td><td id="statMean">—</td></tr>
+   <tr><td>Median index</td><td id="statMedian">—</td></tr>
+   <tr><td>Minimum index</td><td id="statMin">—</td></tr>
+   <tr><td>Maximum index</td><td id="statMax">—</td></tr>
+   <tr><td>Standard deviation</td><td id="statStd">—</td></tr>
+   <tr><td>Lit pixel count</td><td id="statLit">—</td></tr>
+   <tr><td>Non-zero pixel count</td><td id="statNonZero">—</td></tr>
+  </table>
+ </div>
+
+ <div class="panel-section">
+  <div class="section-title">10 / SELECTED AREA DETAILS</div>
+  <div id="selectedProperties" class="info">
+   Select a region, district, ward or EA.
+  </div>
+ </div>
+
+ <div class="panel-section">
+  <div class="section-title">11 / EXPORT</div>
+  <button class="primary" id="exportStatsBtn">EXPORT IMAGE STATISTICS CSV</button>
+  <button class="secondary" id="exportBtn">EXPORT SELECTED GEOJSON</button>
+  <button class="secondary" id="exportAllBtn">EXPORT ALL BOUNDARIES</button>
+ </div>
+
+ <div class="panel-section">
+  <div class="section-title">12 / METHODOLOGY AND LIMITATIONS</div>
+  <div class="info">
+   <b>Image processing</b><br>
+   NASA VIIRS ENCC tiles are requested, clipped to the selected
+   administrative geometry and recoloured using a continuous
+   browser-side colour ramp.
+   <br><br>
+   <b>Statistics</b><br>
+   Pixel values are sampled from successfully loaded image tiles.
+   The charts describe the loaded tile sample, not necessarily the
+   complete selected area.
+   <br><br>
+   <b>Important</b><br>
+   The ENCC display index is not calibrated radiance. For scientific
+   radiance analysis, use the original quantitative VIIRS raster,
+   apply quality filtering and calculate zonal statistics in a
+   suitable GIS or raster-processing workflow.
+  </div>
+ </div>
+
+</aside>
 </div>
 
 <footer>
@@ -242,589 +417,965 @@ footer{padding:10px 18px;border-top:1px solid var(--line);
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/@turf/turf@7.2.0/turf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
 <script>
 /* ============================================================
-   GBoS GEOAI — SELECTED-AREA NIGHTTIME LIGHT CLIPPING
-   NASA VIIRS SNPP DNB ENCC
-   ============================================================ */
+   CONFIGURATION
+============================================================ */
 
 const BOUNDARY_URL =
  "https://raw.githubusercontent.com/silkysingz94-oss/Socioeconomic-Intelligence/main/Census_EAs_Geo.json";
 
-const NASA_TILE_URL =
- "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_DayNightBand_ENCC/default/{date}/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png";
+const NASA_HOSTS=[
+ "https://gibs.earthdata.nasa.gov",
+ "https://gibs-a.earthdata.nasa.gov"
+];
 
-let boundaryData = null;
-let selectedFeatures = [];
-let selectedGeoJSON = null;
-let boundaryLayer = null;
-let imageryLayer = null;
-let imageryVisible = true;
-let baseLayers = {};
-let tileLoads = 0;
-let tileErrors = 0;
-let activeSelectionLevel = "None";
+const NASA_LAYER="VIIRS_SNPP_DayNightBand_ENCC";
+const NASA_MATRIX="GoogleMapsCompatible_Level8";
+const NATIVE_ZOOM=8;
 
-const map = L.map("map", {
- center:[13.45,-16.58],
- zoom:8,
- minZoom:5,
- maxZoom:18,
- zoomControl:true
-});
+let boundaryData=null;
+let selectedFeatures=[];
+let selectedGeoJSON=null;
+let boundaryLayer=null;
+let imageryLayer=null;
+let imageryVisible=true;
+let activeSelectionLevel="None";
+let currentRequestId=0;
 
-baseLayers.dark = L.tileLayer(
- "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
- {attribution:"© OpenStreetMap © CARTO",maxZoom:20}
-);
+let tileLoads=0;
+let tileErrors=0;
+let tileFallbacks=0;
 
-baseLayers.street = L.tileLayer(
- "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
- {attribution:"© OpenStreetMap contributors",maxZoom:19}
-);
+let processedTiles=new Set();
+let imageSamples=[];
+let histogram=new Array(16).fill(0);
+let classCounts=new Array(5).fill(0);
 
-baseLayers.satellite = L.tileLayer(
- "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
- {attribution:"Esri World Imagery",maxZoom:19}
-);
+const $=id=>document.getElementById(id);
 
-baseLayers.terrain = L.tileLayer(
- "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
- {attribution:"© OpenTopoMap",maxZoom:17}
-);
+/* ============================================================
+   CHARTS
+============================================================ */
 
-baseLayers.dark.addTo(map);
+Chart.defaults.color="#a9bdcf";
+Chart.defaults.borderColor="rgba(145,166,187,.15)";
+Chart.defaults.font.family="Arial";
 
-/* ---------- PROPERTY FIELD HELPERS ---------- */
-
-function getProp(feature, names){
- const p = feature && feature.properties ? feature.properties : {};
- for(const name of names){
-  if(p[name] !== undefined && p[name] !== null && String(p[name]).trim() !== ""){
-   return p[name];
+const brightnessChart=new Chart($("brightnessChart"),{
+ type:"bar",
+ data:{
+  labels:["0–15","16–31","32–47","48–63","64–79","80–95",
+   "96–111","112–127","128–143","144–159","160–175",
+   "176–191","192–207","208–223","224–239","240–255"],
+  datasets:[{
+   label:"Pixel count",
+   data:new Array(16).fill(0),
+   backgroundColor:[
+    "#09051f","#32106b","#3c28a0","#2537b7",
+    "#087fca","#05a6d0","#05c5c4","#20d18d",
+    "#36d66b","#91df3e","#d4e52b","#f5d42a",
+    "#ffad19","#fa7622","#ef3b20","#fff0b8"
+   ],
+   borderWidth:0,
+   borderRadius:3
+  }]
+ },
+ options:{
+  responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false}},
+  scales:{
+   x:{grid:{display:false},ticks:{maxRotation:55,minRotation:35,font:{size:8}}},
+   y:{beginAtZero:true,grid:{color:"rgba(145,166,187,.12)"},
+    ticks:{precision:0,font:{size:9}}}
   }
  }
- return "";
-}
-
-function regionOf(f){
- return String(getProp(f,["RCO","rco","region","region_name","regionname","RCOCODE"]));
-}
-function districtOf(f){
- return String(getProp(f,["lganame","LGA","district","district_name","distname"]));
-}
-function wardOf(f){
- return String(getProp(f,["wardname","ward","ward_name","hward"]));
-}
-function eaOf(f){
- return String(getProp(f,["feacode","FEACODE","ea_code","eacode","eaname","EA"]));
-}
-
-function uniqueSorted(values){
- return [...new Set(values.filter(v=>v!=="" && v!=="undefined"))]
-  .sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-}
-
-function setOptions(element, values, placeholder){
- element.innerHTML = "";
- const first = document.createElement("option");
- first.value = "";
- first.textContent = placeholder;
- element.appendChild(first);
- values.forEach(value=>{
-  const option = document.createElement("option");
-  option.value = value;
-  option.textContent = value;
-  element.appendChild(option);
- });
-}
-
-const regionSelect = document.getElementById("regionSelect");
-const districtSelect = document.getElementById("districtSelect");
-const wardSelect = document.getElementById("wardSelect");
-const eaSelect = document.getElementById("eaSelect");
-
-function loadRegionOptions(){
- if(!boundaryData) return;
- const regions = uniqueSorted(boundaryData.features.map(regionOf));
- setOptions(regionSelect,regions,"Select region");
- document.getElementById("boundaryStatus").textContent =
-  `${boundaryData.features.length.toLocaleString()} boundary features loaded.`;
-}
-
-regionSelect.addEventListener("change",()=>{
- const region = regionSelect.value;
- const filtered = boundaryData.features.filter(f=>regionOf(f)===region);
- setOptions(districtSelect,uniqueSorted(filtered.map(districtOf)),"Select district");
- districtSelect.disabled = !region;
- setOptions(wardSelect,[],"Select ward");
- setOptions(eaSelect,[],"Select enumeration area");
- wardSelect.disabled = true;
- eaSelect.disabled = true;
 });
 
-districtSelect.addEventListener("change",()=>{
- const region = regionSelect.value;
- const district = districtSelect.value;
- const filtered = boundaryData.features.filter(f=>
-  regionOf(f)===region && districtOf(f)===district
- );
- setOptions(wardSelect,uniqueSorted(filtered.map(wardOf)),"Select ward");
- wardSelect.disabled = !district;
- setOptions(eaSelect,[],"Select enumeration area");
- eaSelect.disabled = true;
+const classChart=new Chart($("classChart"),{
+ type:"doughnut",
+ data:{
+  labels:["Very low","Low","Moderate","High","Very high"],
+  datasets:[{
+   data:[0,0,0,0,0],
+   backgroundColor:["#32106b","#087fca","#05c5c4","#d4e52b","#ef3b20"],
+   borderColor:"#101e30",
+   borderWidth:2
+  }]
+ },
+ options:{
+  responsive:true,maintainAspectRatio:false,
+  plugins:{
+   legend:{position:"bottom",labels:{boxWidth:10,padding:10,font:{size:9}}}
+  },
+  cutout:"58%"
+ }
 });
 
-wardSelect.addEventListener("change",()=>{
- const region = regionSelect.value;
- const district = districtSelect.value;
- const ward = wardSelect.value;
- const filtered = boundaryData.features.filter(f=>
-  regionOf(f)===region && districtOf(f)===district && wardOf(f)===ward
- );
- setOptions(eaSelect,uniqueSorted(filtered.map(eaOf)),"Select enumeration area");
- eaSelect.disabled = !ward;
-});
+/* ============================================================
+   COLOUR RAMPS
+============================================================ */
 
-/* ---------- SELECTED FEATURE LOGIC ---------- */
+const colourRamps={
+ multicolour:[
+  [0,[9,5,31]],[0.12,[50,16,107]],[0.25,[37,55,183]],
+  [0.38,[8,127,202]],[0.50,[5,197,196]],
+  [0.62,[54,214,107]],[0.74,[212,229,43]],
+  [0.85,[255,173,25]],[0.94,[239,59,32]],
+  [1,[255,245,207]]
+ ],
+ thermal:[
+  [0,[8,5,20]],[0.15,[55,5,75]],[0.32,[130,10,90]],
+  [0.5,[210,35,55]],[0.68,[245,105,25]],
+  [0.84,[255,205,50]],[1,[255,255,220]]
+ ],
+ ocean:[
+  [0,[5,12,40]],[0.2,[10,45,110]],[0.4,[0,120,180]],
+  [0.6,[20,210,210]],[0.8,[140,230,130]],
+  [1,[255,245,110]]
+ ],
+ inferno:[
+  [0,[0,0,4]],[0.2,[40,11,84]],[0.4,[101,21,110]],
+  [0.6,[159,42,99]],[0.8,[212,72,66]],[1,[252,165,10]]
+ ],
+ grayscale:[
+  [0,[0,0,0]],[1,[255,255,255]]
+ ]
+};
 
-function getCurrentSelection(){
- if(!boundaryData) return [];
- const region = regionSelect.value;
- const district = districtSelect.value;
- const ward = wardSelect.value;
- const ea = eaSelect.value;
+function interpolateColor(value,mode){
+ const stops=colourRamps[mode]||colourRamps.multicolour;
+ const t=Math.max(0,Math.min(1,value/255));
 
- if(!region) return [];
-
- let features = boundaryData.features.filter(f=>regionOf(f)===region);
- activeSelectionLevel = "Region";
-
- if(district){
-  features = features.filter(f=>districtOf(f)===district);
-  activeSelectionLevel = "District / LGA";
- }
- if(ward){
-  features = features.filter(f=>wardOf(f)===ward);
-  activeSelectionLevel = "Ward";
- }
- if(ea){
-  features = features.filter(f=>eaOf(f)===ea);
-  activeSelectionLevel = "Enumeration Area";
- }
- return features;
-}
-
-function makeFeatureCollection(features){
- return {type:"FeatureCollection",features:features};
-}
-
-function applySelection(){
- if(!boundaryData) return;
-
- selectedFeatures = getCurrentSelection();
- if(!selectedFeatures.length){
-  clearSelection();
-  return;
- }
-
- selectedGeoJSON = makeFeatureCollection(selectedFeatures);
-
- if(boundaryLayer) map.removeLayer(boundaryLayer);
-
- boundaryLayer = L.geoJSON(selectedGeoJSON,{
-  style:{
-   color:"#42e5c2",
-   weight:2,
-   opacity:1,
-   fillColor:"#42e5c2",
-   fillOpacity:0.06
+ for(let i=0;i<stops.length-1;i++){
+  const a=stops[i],b=stops[i+1];
+  if(t>=a[0] && t<=b[0]){
+   const f=(t-a[0])/(b[0]-a[0]);
+   return [
+    Math.round(a[1][0]+(b[1][0]-a[1][0])*f),
+    Math.round(a[1][1]+(b[1][1]-a[1][1])*f),
+    Math.round(a[1][2]+(b[1][2]-a[1][2])*f)
+   ];
   }
- }).addTo(map);
-
- const bounds = boundaryLayer.getBounds();
- if(bounds.isValid()){
-  map.fitBounds(bounds,{padding:[25,25],maxZoom:14});
  }
-
- updateSelectedAreaIndicators();
- refreshClippedImagery();
+ return stops[stops.length-1][1];
 }
 
-function clearSelection(){
- selectedFeatures = [];
- selectedGeoJSON = null;
- activeSelectionLevel = "None";
+function updateLegend(){
+ const mode=$("colourMode").value;
+ const stops=colourRamps[mode];
+ const gradient=stops.map(s=>{
+  const c=s[1];
+  return `rgb(${c[0]},${c[1]},${c[2]}) ${s[0]*100}%`;
+ }).join(",");
 
- if(boundaryLayer){
-  map.removeLayer(boundaryLayer);
-  boundaryLayer = null;
- }
-
- if(imageryLayer){
-  map.removeLayer(imageryLayer);
-  imageryLayer = null;
- }
-
- document.getElementById("featureCount").textContent = "0";
- document.getElementById("areaValue").textContent = "—";
- document.getElementById("imageryStatus").textContent = "Waiting";
- document.getElementById("selectionLevel").textContent = "None";
- document.getElementById("selectedProperties").textContent =
-  "Select a region, district, ward or enumeration area to view its boundary details.";
- document.getElementById("mapSelectionLabel").textContent = "No area selected";
- document.getElementById("tileStatus").textContent = "Select an area to display clipped imagery";
- document.getElementById("boundaryStatus").textContent =
-  `${boundaryData ? boundaryData.features.length.toLocaleString() : 0} boundary features loaded.`;
-
- map.setView([13.45,-16.58],8);
-}
-
-function updateSelectedAreaIndicators(){
- document.getElementById("featureCount").textContent =
-  selectedFeatures.length.toLocaleString();
-
- document.getElementById("selectionLevel").textContent = activeSelectionLevel;
-
- let area = 0;
- try{
-  selectedFeatures.forEach(f=>{
-   area += turf.area(f);
-  });
-  document.getElementById("areaValue").textContent =
-   (area/1000000).toLocaleString(undefined,{maximumFractionDigits:2});
- }catch(e){
-  document.getElementById("areaValue").textContent = "N/A";
- }
-
- const region = regionSelect.value || "";
- const district = districtSelect.value || "";
- const ward = wardSelect.value || "";
- const ea = eaSelect.value || "";
-
- const label = [region,district,ward,ea].filter(Boolean).join(" / ");
- document.getElementById("mapSelectionLabel").textContent = label;
-
- const props = selectedFeatures[0]?.properties || {};
- let html = `<b>Selection:</b> ${escapeHTML(activeSelectionLevel)}<br>`;
- html += `<b>Region:</b> ${escapeHTML(region || "—")}<br>`;
- html += `<b>District:</b> ${escapeHTML(district || "—")}<br>`;
- html += `<b>Ward:</b> ${escapeHTML(ward || "—")}<br>`;
- html += `<b>EA:</b> ${escapeHTML(ea || "—")}<br>`;
- html += `<b>Features:</b> ${selectedFeatures.length.toLocaleString()}<br>`;
-
- const population = getProp(selectedFeatures[0],["sum_pop","POP","population","pop"]);
- const households = getProp(selectedFeatures[0],["sum_hhs","households","HH"]);
- if(population!=="") html += `<b>Population field:</b> ${escapeHTML(population)}<br>`;
- if(households!=="") html += `<b>Household field:</b> ${escapeHTML(households)}<br>`;
-
- html += `<br><span class="muted">Area is calculated from the selected boundary geometry. Population and household values are shown only where available in the boundary attributes.</span>`;
- document.getElementById("selectedProperties").innerHTML = html;
-}
-
-function escapeHTML(value){
- return String(value).replace(/[&<>"']/g,c=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
- }[c]));
+ $("legendRamp").style.background=
+  `linear-gradient(to right,${gradient})`;
 }
 
 /* ============================================================
-   CUSTOM CANVAS TILE LAYER
-   This is the important clipping component.
-   It draws each NASA tile, then masks pixels outside the
-   currently selected polygon or multipolygon.
-   ============================================================ */
+   MAP AND BASEMAPS
+============================================================ */
 
-const ClippedNightLights = L.GridLayer.extend({
-
- initialize:function(options){
-  L.setOptions(this,options);
-  this.tileSize = 256;
- },
-
- createTile:function(coords,done){
-  const canvas = document.createElement("canvas");
-  canvas.width = 256;
-  canvas.height = 256;
-
-  const ctx = canvas.getContext("2d");
-  const date = document.getElementById("imageDate").value;
-
-  if(!selectedGeoJSON || !selectedFeatures.length){
-   done(null,canvas);
-   return canvas;
-  }
-
-  const url = NASA_TILE_URL
-   .replace("{date}",date)
-   .replace("{z}",coords.z)
-   .replace("{x}",coords.x)
-   .replace("{y}",coords.y);
-
-  const image = new Image();
-  image.crossOrigin = "anonymous";
-
-  image.onload = ()=>{
-   try{
-    ctx.clearRect(0,0,256,256);
-
-    /* Draw the original satellite tile. */
-    ctx.drawImage(image,0,0,256,256);
-
-    /* Build the polygon mask in tile-pixel coordinates. */
-    const path = new Path2D();
-    const tileOriginX = coords.x * 256;
-    const tileOriginY = coords.y * 256;
-
-    function addRing(ring){
-     if(!ring || ring.length<3) return;
-     ring.forEach((coordinate,index)=>{
-      const point = map.project(
-       L.latLng(coordinate[1],coordinate[0]),coords.z
-      );
-      const x = point.x - tileOriginX;
-      const y = point.y - tileOriginY;
-      if(index===0) path.moveTo(x,y);
-      else path.lineTo(x,y);
-     });
-     path.closePath();
-    }
-
-    function addPolygonCoordinates(polygon){
-     if(!polygon) return;
-     polygon.forEach(ring=>addRing(ring));
-    }
-
-    function processGeometry(geometry){
-     if(!geometry) return;
-     if(geometry.type==="Polygon"){
-      addPolygonCoordinates(geometry.coordinates);
-     }else if(geometry.type==="MultiPolygon"){
-      geometry.coordinates.forEach(addPolygonCoordinates);
-     }else if(geometry.type==="GeometryCollection"){
-      geometry.geometries.forEach(processGeometry);
-     }
-    }
-
-    selectedFeatures.forEach(feature=>{
-     processGeometry(feature.geometry);
-    });
-
-    /*
-      destination-in keeps only pixels inside the polygon.
-      evenodd handles interior rings and holes correctly.
-    */
-    ctx.globalCompositeOperation = "destination-in";
-    ctx.fillStyle = "#ffffff";
-    ctx.fill(path,"evenodd");
-    ctx.globalCompositeOperation = "source-over";
-
-    const opacity = Number(document.getElementById("opacity").value)/100;
-    canvas.style.opacity = String(opacity);
-
-    done(null,canvas);
-   }catch(error){
-    console.error("Tile clipping error:",error);
-    done(null,canvas);
-   }
-  };
-
-  image.onerror = ()=>{
-   tileErrors++;
-   updateTileStatus();
-   done(null,canvas);
-  };
-
-  image.src = url;
-  return canvas;
- }
+const map=L.map("map",{
+ center:[13.45,-16.58],
+ zoom:8,
+ minZoom:5,
+ maxZoom:8,
+ zoomControl:true
 });
 
-/* ---------- IMAGERY REFRESH ---------- */
+const baseLayers={
+ dark:L.tileLayer(
+  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  {attribution:"© OpenStreetMap © CARTO",maxZoom:19}
+ ),
+ street:L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {attribution:"© OpenStreetMap contributors",maxZoom:19}
+ ),
+ satellite:L.tileLayer(
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  {attribution:"Esri World Imagery",maxZoom:19}
+ ),
+ terrain:L.tileLayer(
+  "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+  {attribution:"© OpenTopoMap",maxZoom:17}
+ )
+};
 
-function refreshClippedImagery(){
- if(!selectedGeoJSON || !selectedFeatures.length){
-  document.getElementById("tileStatus").textContent =
-   "No selected polygon. Imagery remains hidden.";
-  document.getElementById("imageryStatus").textContent = "No selection";
-  return;
- }
+baseLayers.dark.addTo(map);
 
- if(imageryLayer){
-  map.removeLayer(imageryLayer);
-  imageryLayer = null;
- }
-
- tileLoads = 0;
- tileErrors = 0;
-
- imageryLayer = new ClippedNightLights({
-  tileSize:256,
-  opacity:Number(document.getElementById("opacity").value)/100,
-  updateWhenIdle:true,
-  keepBuffer:2,
-  noWrap:true
- });
-
- imageryLayer.addTo(map);
-
- imageryLayer.on("tileload",()=>{
-  tileLoads++;
-  updateTileStatus();
- });
-
- imageryLayer.on("tileerror",()=>{
-  tileErrors++;
-  updateTileStatus();
- });
-
- document.getElementById("imageryStatus").textContent = "Loading";
- document.getElementById("tileStatus").textContent =
-  "Loading NASA VIIRS imagery clipped to selected boundary...";
-}
-
-function updateTileStatus(){
- const total = tileLoads + tileErrors;
- document.getElementById("tileStatus").textContent =
-  `${tileLoads} tiles loaded • ${tileErrors} tile errors`;
-
- document.getElementById("imageryStatus").textContent =
-  tileLoads>0 ? "Visible" : (tileErrors>0 ? "Tile errors" : "Loading");
-}
-
-/* ---------- UI EVENTS ---------- */
-
-document.getElementById("applyBtn").addEventListener("click",applySelection);
-
-document.getElementById("resetBtn").addEventListener("click",()=>{
- regionSelect.value = "";
- setOptions(districtSelect,[],"Select district");
- setOptions(wardSelect,[],"Select ward");
- setOptions(eaSelect,[],"Select enumeration area");
- districtSelect.disabled = true;
- wardSelect.disabled = true;
- eaSelect.disabled = true;
- clearSelection();
-});
-
-document.getElementById("refreshBtn").addEventListener("click",()=>{
- refreshClippedImagery();
-});
-
-document.getElementById("imageDate").addEventListener("change",()=>{
- if(selectedFeatures.length) refreshClippedImagery();
-});
-
-document.getElementById("opacity").addEventListener("input",()=>{
- if(imageryLayer){
-  imageryLayer.setOpacity(Number(document.getElementById("opacity").value)/100);
- }
-});
-
-document.getElementById("toggleBtn").addEventListener("click",()=>{
- if(!imageryLayer) return;
- if(imageryVisible){
-  map.removeLayer(imageryLayer);
-  imageryVisible = false;
- }else{
-  imageryLayer.addTo(map);
-  imageryVisible = true;
- }
-});
-
-document.getElementById("basemapSelect").addEventListener("change",e=>{
+$("basemapSelect").addEventListener("change",e=>{
  Object.values(baseLayers).forEach(layer=>{
   if(map.hasLayer(layer)) map.removeLayer(layer);
  });
  baseLayers[e.target.value].addTo(map);
 });
 
-/* ---------- GEOJSON UPLOAD ---------- */
+/* ============================================================
+   BOUNDARY FIELD ALIASES
+============================================================ */
 
-document.getElementById("geojsonUpload").addEventListener("change",async e=>{
- const file = e.target.files[0];
+function prop(f,names){
+ const p=f&&f.properties?f.properties:{};
+ for(const n of names){
+  if(p[n]!==undefined && p[n]!==null && String(p[n]).trim()!==""){
+   return p[n];
+  }
+ }
+ return "";
+}
+function regionOf(f){
+ return String(prop(f,["RCO","rco","region","region_name","regionname","RCOCODE"]));
+}
+function districtOf(f){
+ return String(prop(f,["lganame","LGA","district","district_name","distname"]));
+}
+function wardOf(f){
+ return String(prop(f,["wardname","ward","ward_name","hward"]));
+}
+function eaOf(f){
+ return String(prop(f,["feacode","FEACODE","ea_code","eacode","eaname","EA"]));
+}
+function uniqueSorted(values){
+ return [...new Set(values.filter(v=>v&&v!=="undefined"))]
+  .sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+}
+function setOptions(el,values,placeholder){
+ el.innerHTML="";
+ const first=document.createElement("option");
+ first.value="";
+ first.textContent=placeholder;
+ el.appendChild(first);
+ values.forEach(v=>{
+  const o=document.createElement("option");
+  o.value=v;
+  o.textContent=v;
+  el.appendChild(o);
+ });
+}
+
+/* ============================================================
+   ADMINISTRATIVE SELECTORS
+============================================================ */
+
+function loadRegionOptions(){
+ setOptions($("regionSelect"),
+  uniqueSorted(boundaryData.features.map(regionOf)),
+  "Select region");
+ $("boundaryStatus").textContent=
+  boundaryData.features.length.toLocaleString()+" boundary features loaded.";
+}
+
+$("regionSelect").addEventListener("change",()=>{
+ const r=$("regionSelect").value;
+ const fs=boundaryData.features.filter(f=>regionOf(f)===r);
+ setOptions($("districtSelect"),uniqueSorted(fs.map(districtOf)),"Select district");
+ $("districtSelect").disabled=!r;
+ setOptions($("wardSelect"),[],"Select ward");
+ setOptions($("eaSelect"),[],"Select enumeration area");
+ $("wardSelect").disabled=true;
+ $("eaSelect").disabled=true;
+});
+
+$("districtSelect").addEventListener("change",()=>{
+ const r=$("regionSelect").value;
+ const d=$("districtSelect").value;
+ const fs=boundaryData.features.filter(f=>
+  regionOf(f)===r&&districtOf(f)===d
+ );
+ setOptions($("wardSelect"),uniqueSorted(fs.map(wardOf)),"Select ward");
+ $("wardSelect").disabled=!d;
+ setOptions($("eaSelect"),[],"Select enumeration area");
+ $("eaSelect").disabled=true;
+});
+
+$("wardSelect").addEventListener("change",()=>{
+ const r=$("regionSelect").value;
+ const d=$("districtSelect").value;
+ const w=$("wardSelect").value;
+ const fs=boundaryData.features.filter(f=>
+  regionOf(f)===r&&districtOf(f)===d&&wardOf(f)===w
+ );
+ setOptions($("eaSelect"),uniqueSorted(fs.map(eaOf)),"Select enumeration area");
+ $("eaSelect").disabled=!w;
+});
+
+/* ============================================================
+   SELECTION
+============================================================ */
+
+function getSelection(){
+ const r=$("regionSelect").value;
+ const d=$("districtSelect").value;
+ const w=$("wardSelect").value;
+ const ea=$("eaSelect").value;
+
+ if(!r) return [];
+
+ let fs=boundaryData.features.filter(f=>regionOf(f)===r);
+ activeSelectionLevel="Region";
+
+ if(d){
+  fs=fs.filter(f=>districtOf(f)===d);
+  activeSelectionLevel="District / LGA";
+ }
+ if(w){
+  fs=fs.filter(f=>wardOf(f)===w);
+  activeSelectionLevel="Ward";
+ }
+ if(ea){
+  fs=fs.filter(f=>eaOf(f)===ea);
+  activeSelectionLevel="Enumeration Area";
+ }
+ return fs;
+}
+
+function escapeHTML(v){
+ return String(v).replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function updateSelectionDetails(){
+ $("featureCount").textContent=selectedFeatures.length.toLocaleString();
+ $("selectionLevel").textContent=activeSelectionLevel;
+
+ let area=0;
+ try{
+  selectedFeatures.forEach(f=>area+=turf.area(f));
+  $("areaValue").textContent=(area/1e6).toLocaleString(undefined,{
+   maximumFractionDigits:2
+  });
+ }catch(e){
+  $("areaValue").textContent="N/A";
+ }
+
+ const r=$("regionSelect").value;
+ const d=$("districtSelect").value;
+ const w=$("wardSelect").value;
+ const ea=$("eaSelect").value;
+
+ $("mapSelectionLabel").textContent=
+  [r,d,w,ea].filter(Boolean).join(" / ");
+
+ const p=selectedFeatures[0]?.properties||{};
+ let html="";
+ html+="<b>Selection level:</b> "+escapeHTML(activeSelectionLevel)+"<br>";
+ html+="<b>Region:</b> "+escapeHTML(r||"—")+"<br>";
+ html+="<b>District:</b> "+escapeHTML(d||"—")+"<br>";
+ html+="<b>Ward:</b> "+escapeHTML(w||"—")+"<br>";
+ html+="<b>EA:</b> "+escapeHTML(ea||"—")+"<br>";
+ html+="<b>Selected features:</b> "+selectedFeatures.length+"<br>";
+
+ const pop=prop(selectedFeatures[0],["sum_pop","POP","population","pop"]);
+ const hh=prop(selectedFeatures[0],["sum_hhs","households","HH"]);
+ if(pop!=="") html+="<b>Population attribute:</b> "+escapeHTML(pop)+"<br>";
+ if(hh!=="") html+="<b>Household attribute:</b> "+escapeHTML(hh)+"<br>";
+
+ $("selectedProperties").innerHTML=html;
+}
+
+function applySelection(){
+ if(!boundaryData) return;
+
+ selectedFeatures=getSelection();
+ if(!selectedFeatures.length){
+  clearSelection();
+  return;
+ }
+
+ selectedGeoJSON={
+  type:"FeatureCollection",
+  features:selectedFeatures
+ };
+
+ if(boundaryLayer) map.removeLayer(boundaryLayer);
+
+ boundaryLayer=L.geoJSON(selectedGeoJSON,{
+  style:{
+   color:"#ffffff",
+   weight:2,
+   opacity:1,
+   fillColor:"#43e5c2",
+   fillOpacity:0.025
+  }
+ }).addTo(map);
+
+ const bounds=boundaryLayer.getBounds();
+ if(bounds.isValid()){
+  map.fitBounds(bounds,{padding:[25,25],maxZoom:8});
+ }
+
+ updateSelectionDetails();
+ refreshImagery();
+}
+
+/* ============================================================
+   IMAGE STATISTICS
+============================================================ */
+
+function resetStatistics(){
+ processedTiles.clear();
+ imageSamples=[];
+ histogram=new Array(16).fill(0);
+ classCounts=new Array(5).fill(0);
+
+ tileLoads=0;
+ tileErrors=0;
+ tileFallbacks=0;
+
+ $("meanValue").textContent="—";
+ $("maxValue").textContent="—";
+ $("litShare").textContent="—";
+ $("pixelCount").textContent="0";
+
+ ["statMean","statMedian","statMin","statMax","statStd",
+  "statLit","statNonZero"].forEach(id=>$(id).textContent="—");
+
+ brightnessChart.data.datasets[0].data=histogram.slice();
+ brightnessChart.update("none");
+
+ classChart.data.datasets[0].data=classCounts.slice();
+ classChart.update("none");
+}
+
+function addTileSamples(values,key){
+ if(processedTiles.has(key)) return;
+ processedTiles.add(key);
+
+ for(const v of values){
+  imageSamples.push(v);
+  histogram[Math.min(15,Math.floor(v/16))]++;
+  if(v<=15) classCounts[0]++;
+  else if(v<=63) classCounts[1]++;
+  else if(v<=127) classCounts[2]++;
+  else if(v<=191) classCounts[3]++;
+  else classCounts[4]++;
+ }
+ updateStatistics();
+}
+
+function updateStatistics(){
+ const n=imageSamples.length;
+
+ if(!n){
+  $("pixelCount").textContent="0";
+  return;
+ }
+
+ let sum=0,min=255,max=0,lit=0,nonzero=0;
+
+ for(const v of imageSamples){
+  sum+=v;
+  if(v<min) min=v;
+  if(v>max) max=v;
+  if(v>1) lit++;
+  if(v>0) nonzero++;
+ }
+
+ const mean=sum/n;
+ const sorted=imageSamples.slice().sort((a,b)=>a-b);
+ const median=n%2
+  ? sorted[Math.floor(n/2)]
+  : (sorted[n/2-1]+sorted[n/2])/2;
+
+ let variance=0;
+ for(const v of imageSamples) variance+=(v-mean)**2;
+ const sd=Math.sqrt(variance/n);
+
+ $("meanValue").textContent=mean.toFixed(1);
+ $("maxValue").textContent=max;
+ $("litShare").textContent=(lit/n*100).toFixed(1)+"%";
+ $("pixelCount").textContent=n.toLocaleString();
+
+ $("statMean").textContent=mean.toFixed(2);
+ $("statMedian").textContent=median.toFixed(2);
+ $("statMin").textContent=min;
+ $("statMax").textContent=max;
+ $("statStd").textContent=sd.toFixed(2);
+ $("statLit").textContent=lit.toLocaleString();
+ $("statNonZero").textContent=nonzero.toLocaleString();
+
+ brightnessChart.data.datasets[0].data=histogram.slice();
+ brightnessChart.update("none");
+
+ classChart.data.datasets[0].data=classCounts.slice();
+ classChart.update("none");
+}
+
+/* ============================================================
+   NASA TILE URL
+============================================================ */
+
+function tileURL(host,date,z,x,y){
+ return host+
+  "/wmts/epsg3857/best/"+NASA_LAYER+
+  "/default/"+date+"/"+NASA_MATRIX+
+  "/"+z+"/"+y+"/"+x+".png";
+}
+
+/* ============================================================
+   PIXEL PROCESSING AND COLOURISATION
+============================================================ */
+
+function geometryPath(coords){
+ const path=new Path2D();
+ const tileOriginX=coords.x*256;
+ const tileOriginY=coords.y*256;
+
+ function ringToPath(ring){
+  if(!ring||ring.length<3) return;
+
+  ring.forEach((coordinate,i)=>{
+   const p=map.project(
+    L.latLng(coordinate[1],coordinate[0]),coords.z
+   );
+   const x=p.x-tileOriginX;
+   const y=p.y-tileOriginY;
+
+   if(i===0) path.moveTo(x,y);
+   else path.lineTo(x,y);
+  });
+  path.closePath();
+ }
+
+ function geometry(g){
+  if(!g) return;
+  if(g.type==="Polygon"){
+   g.coordinates.forEach(ringToPath);
+  }else if(g.type==="MultiPolygon"){
+   g.coordinates.forEach(poly=>poly.forEach(ringToPath));
+  }else if(g.type==="GeometryCollection"){
+   g.geometries.forEach(geometry);
+  }
+ }
+
+ selectedFeatures.forEach(f=>geometry(f.geometry));
+ return path;
+}
+
+function processImageTile(image,coords,canvas){
+ const ctx=canvas.getContext("2d",{willReadFrequently:true});
+ const path=geometryPath(coords);
+
+ ctx.clearRect(0,0,256,256);
+
+ /* Clip the tile to the selected polygon before drawing. */
+ ctx.save();
+ ctx.clip(path,"evenodd");
+ ctx.drawImage(image,0,0,256,256);
+ ctx.restore();
+
+ let frame;
+ try{
+  frame=ctx.getImageData(0,0,256,256);
+ }catch(error){
+  throw new Error("Browser blocked pixel access to NASA imagery. Check CORS.");
+ }
+
+ const pixels=frame.data;
+ const samples=[];
+ const mode=$("colourMode").value;
+
+ for(let i=0;i<pixels.length;i+=4){
+  const alpha=pixels[i+3];
+
+  /* Outside the selected polygon is transparent. */
+  if(alpha===0) continue;
+
+  /*
+    NASA ENCC display layer is supplied as a single-channel
+    visual brightness image. Its greyscale display value is
+    used here as a 0–255 image index.
+  */
+  const value=Math.max(0,Math.min(255,pixels[i]));
+
+  const rgb=interpolateColor(value,mode);
+
+  pixels[i]=rgb[0];
+  pixels[i+1]=rgb[1];
+  pixels[i+2]=rgb[2];
+
+  /* Sample every second pixel to keep browser processing light. */
+  const pixelNumber=i/4;
+  const px=pixelNumber%256;
+  const py=Math.floor(pixelNumber/256);
+
+  if(px%2===0 && py%2===0){
+   samples.push(value);
+  }
+ }
+
+ ctx.putImageData(frame,0,0);
+ canvas.style.opacity=String(Number($("opacity").value)/100);
+
+ return samples;
+}
+
+/* ============================================================
+   CUSTOM COLOURED AND CLIPPED TILE LAYER
+============================================================ */
+
+const ColouredNightLights=L.GridLayer.extend({
+
+ createTile:function(coords,done){
+  const canvas=document.createElement("canvas");
+  canvas.width=256;
+  canvas.height=256;
+
+  if(!selectedFeatures.length){
+   done(null,canvas);
+   return canvas;
+  }
+
+  const requestId=currentRequestId;
+  const date=$("imageDate").value;
+  const key=date+"_"+coords.z+"_"+coords.x+"_"+coords.y;
+
+  let hostIndex=0;
+
+  function tryHost(){
+   if(requestId!==currentRequestId){
+    done(null,canvas);
+    return;
+   }
+
+   if(hostIndex>=NASA_HOSTS.length){
+    tileErrors++;
+    updateDiagnostics();
+    done(null,canvas);
+    return;
+   }
+
+   const img=new Image();
+   img.crossOrigin="anonymous";
+
+   img.onload=()=>{
+    if(requestId!==currentRequestId){
+     done(null,canvas);
+     return;
+    }
+
+    try{
+     const samples=processImageTile(img,coords,canvas);
+     addTileSamples(samples,key);
+
+     tileLoads++;
+     if(hostIndex>0) tileFallbacks++;
+
+     updateDiagnostics();
+     done(null,canvas);
+    }catch(error){
+     console.error("VIIRS tile processing error:",error);
+     tileErrors++;
+     updateDiagnostics();
+     done(null,canvas);
+    }
+   };
+
+   img.onerror=()=>{
+    hostIndex++;
+    tryHost();
+   };
+
+   img.src=tileURL(NASA_HOSTS[hostIndex],date,coords.z,coords.x,coords.y);
+  }
+
+  tryHost();
+  return canvas;
+ }
+});
+
+/* ============================================================
+   DIAGNOSTICS
+============================================================ */
+
+function updateDiagnostics(){
+ $("tileStatus").textContent=
+  tileLoads+" successful • "+tileErrors+" failed tiles";
+
+ $("imageryStatus").textContent=
+  tileLoads>0?"Visible":tileErrors>0?"Tile errors":"Loading";
+
+ $("tileDiagnostics").innerHTML=
+  "<b>NASA layer:</b> "+NASA_LAYER+"<br>"+
+  "<b>Observation date:</b> "+escapeHTML($("imageDate").value)+"<br>"+
+  "<b>Native zoom:</b> "+NATIVE_ZOOM+"<br>"+
+  "<b>Successful tiles:</b> "+tileLoads+"<br>"+
+  "<b>Failed tiles:</b> "+tileErrors+"<br>"+
+  "<b>Fallback tiles:</b> "+tileFallbacks+"<br>"+
+  "<b>Sampled pixels:</b> "+imageSamples.length.toLocaleString()+"<br>"+
+  "<b>Colour mode:</b> "+escapeHTML($("colourMode").value)+"<br>"+
+  "<span class='muted'>Statistics represent the tiles successfully loaded for the current map view.</span>";
+}
+
+/* ============================================================
+   REFRESH IMAGERY
+============================================================ */
+
+function refreshImagery(){
+ if(!selectedFeatures.length){
+  $("imageryStatus").textContent="No selection";
+  $("tileStatus").textContent="Select an area first";
+  return;
+ }
+
+ currentRequestId++;
+
+ if(imageryLayer){
+  map.removeLayer(imageryLayer);
+  imageryLayer=null;
+ }
+
+ resetStatistics();
+ imageryVisible=true;
+
+ imageryLayer=new ColouredNightLights({
+  tileSize:256,
+  maxNativeZoom:NATIVE_ZOOM,
+  maxZoom:NATIVE_ZOOM,
+  minZoom:0,
+  opacity:Number($("opacity").value)/100,
+  updateWhenIdle:true,
+  keepBuffer:1,
+  noWrap:true
+ });
+
+ imageryLayer.addTo(map);
+
+ $("imageryStatus").textContent="Loading";
+ $("tileStatus").textContent="Requesting and recolouring NASA VIIRS tiles...";
+ updateDiagnostics();
+}
+
+/* ============================================================
+   CLEAR SELECTION
+============================================================ */
+
+function clearSelection(){
+ currentRequestId++;
+
+ selectedFeatures=[];
+ selectedGeoJSON=null;
+ activeSelectionLevel="None";
+
+ if(boundaryLayer){
+  map.removeLayer(boundaryLayer);
+  boundaryLayer=null;
+ }
+ if(imageryLayer){
+  map.removeLayer(imageryLayer);
+  imageryLayer=null;
+ }
+
+ resetStatistics();
+
+ $("featureCount").textContent="0";
+ $("areaValue").textContent="—";
+ $("imageryStatus").textContent="Waiting";
+ $("selectionLevel").textContent="None";
+ $("selectedProperties").textContent="Select a region, district, ward or EA.";
+ $("mapSelectionLabel").textContent="No area selected";
+ $("tileStatus").textContent="Select an area to display imagery";
+ $("tileDiagnostics").textContent="No imagery requests are being made.";
+}
+
+/* ============================================================
+   USER INTERACTIONS
+============================================================ */
+
+$("applyBtn").addEventListener("click",applySelection);
+
+$("resetBtn").addEventListener("click",()=>{
+ $("regionSelect").value="";
+ setOptions($("districtSelect"),[],"Select district");
+ setOptions($("wardSelect"),[],"Select ward");
+ setOptions($("eaSelect"),[],"Select enumeration area");
+
+ $("districtSelect").disabled=true;
+ $("wardSelect").disabled=true;
+ $("eaSelect").disabled=true;
+
+ clearSelection();
+ map.setView([13.45,-16.58],8);
+});
+
+$("refreshBtn").addEventListener("click",refreshImagery);
+
+$("imageDate").addEventListener("change",()=>{
+ if(selectedFeatures.length) refreshImagery();
+});
+
+$("colourMode").addEventListener("change",()=>{
+ updateLegend();
+ if(selectedFeatures.length) refreshImagery();
+});
+
+$("opacity").addEventListener("input",()=>{
+ if(imageryLayer){
+  imageryLayer.setOpacity(Number($("opacity").value)/100);
+ }
+});
+
+$("toggleBtn").addEventListener("click",()=>{
+ if(!imageryLayer) return;
+
+ if(imageryVisible){
+  map.removeLayer(imageryLayer);
+  imageryVisible=false;
+  $("imageryStatus").textContent="Hidden";
+ }else{
+  imageryLayer.addTo(map);
+  imageryVisible=true;
+  $("imageryStatus").textContent="Visible";
+ }
+});
+
+/* ============================================================
+   GEOJSON UPLOAD
+============================================================ */
+
+$("geojsonUpload").addEventListener("change",async e=>{
+ const file=e.target.files[0];
  if(!file) return;
 
  try{
-  const text = await file.text();
-  const parsed = JSON.parse(text);
-  if(parsed.type==="Feature") parsed.type="FeatureCollection";
-  if(parsed.type!=="FeatureCollection" || !Array.isArray(parsed.features)){
-   throw new Error("The uploaded file is not a valid GeoJSON FeatureCollection.");
+  const parsed=JSON.parse(await file.text());
+
+  if(parsed.type==="Feature"){
+   boundaryData={type:"FeatureCollection",features:[parsed]};
+  }else if(parsed.type==="FeatureCollection"){
+   boundaryData=parsed;
+  }else{
+   throw new Error("Unsupported GeoJSON structure.");
   }
-  boundaryData = parsed;
+
+  if(!boundaryData.features||!boundaryData.features.length){
+   throw new Error("No features found.");
+  }
+
   clearSelection();
   loadRegionOptions();
-  document.getElementById("boundaryStatus").textContent =
-   `Uploaded ${file.name}: ${boundaryData.features.length.toLocaleString()} features.`;
+
+  $("boundaryStatus").textContent=
+   file.name+" loaded: "+boundaryData.features.length+" features.";
+
  }catch(error){
-  alert("Could not load boundary file: "+error.message);
+  alert("Could not load GeoJSON: "+error.message);
  }
 });
 
-/* ---------- EXPORTS ---------- */
+/* ============================================================
+   EXPORT FUNCTIONS
+============================================================ */
 
-function downloadJSON(data,filename){
- const blob = new Blob([JSON.stringify(data,null,2)],{
-  type:"application/geo+json"
- });
- const url = URL.createObjectURL(blob);
- const a = document.createElement("a");
- a.href = url;
- a.download = filename;
+function downloadFile(content,filename,mime){
+ const blob=new Blob([content],{type:mime});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.appendChild(a);
  a.click();
- URL.revokeObjectURL(url);
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
-document.getElementById("exportBtn").addEventListener("click",()=>{
+function downloadJSON(data,filename){
+ downloadFile(JSON.stringify(data,null,2),filename,"application/geo+json");
+}
+
+$("exportBtn").addEventListener("click",()=>{
  if(!selectedGeoJSON){
-  alert("Select an administrative area first.");
+  alert("Select an area first.");
   return;
  }
- downloadJSON(selectedGeoJSON,"Gambia_Selected_Nighttime_Light_AOI.geojson");
+ downloadJSON(selectedGeoJSON,"Gambia_Selected_Area.geojson");
 });
 
-document.getElementById("exportAllBtn").addEventListener("click",()=>{
+$("exportAllBtn").addEventListener("click",()=>{
  if(!boundaryData){
   alert("Boundary data is not loaded.");
   return;
  }
- downloadJSON(boundaryData,"Gambia_All_Census_Boundaries.geojson");
+ downloadJSON(boundaryData,"Gambia_All_Boundaries.geojson");
 });
 
-/* ---------- LOAD BOUNDARIES ---------- */
+$("exportStatsBtn").addEventListener("click",()=>{
+ if(!imageSamples.length){
+  alert("No successfully loaded image pixels are available to export.");
+  return;
+ }
+
+ const rows=[
+  ["Indicator","Value","Unit"],
+  ["Mean image brightness index", $("statMean").textContent,"0–255"],
+  ["Median image brightness index", $("statMedian").textContent,"0–255"],
+  ["Minimum image brightness index", $("statMin").textContent,"0–255"],
+  ["Maximum image brightness index", $("statMax").textContent,"0–255"],
+  ["Standard deviation", $("statStd").textContent,"Index units"],
+  ["Lit pixel count", $("statLit").textContent,"Sampled pixels"],
+  ["Non-zero pixel count", $("statNonZero").textContent,"Sampled pixels"],
+  ["Total sampled pixels", imageSamples.length,"Sampled pixels"],
+  ["Successful tiles",tileLoads,"Tiles"],
+  ["Failed tiles",tileErrors,"Tiles"],
+  ["Observation date",$("imageDate").value,"Date"],
+  ["Colour rendering",$("colourMode").value,"Mode"],
+  ["Source layer",NASA_LAYER,"NASA GIBS"],
+  ["Selected administrative level",activeSelectionLevel,"Level"],
+  ["Statistic qualification","Visible clipped tile sample; not full-area calibrated radiance","Note"]
+ ];
+
+ const csv=rows.map(row=>row.map(v=>
+  '"'+String(v).replace(/"/g,'""')+'"'
+ ).join(",")).join("\n");
+
+ downloadFile(csv,"Gambia_Selected_Area_Image_Brightness_Statistics.csv","text/csv");
+});
+
+/* ============================================================
+   LOAD BOUNDARY DATA
+============================================================ */
 
 async function loadBoundaries(){
  try{
-  const response = await fetch(BOUNDARY_URL);
+  const response=await fetch(BOUNDARY_URL);
   if(!response.ok) throw new Error("HTTP "+response.status);
 
-  const data = await response.json();
+  const data=await response.json();
 
   if(data.type==="Feature"){
-   boundaryData = {type:"FeatureCollection",features:[data]};
+   boundaryData={type:"FeatureCollection",features:[data]};
   }else{
-   boundaryData = data;
+   boundaryData=data;
   }
 
-  if(!boundaryData.features || !boundaryData.features.length){
-   throw new Error("No boundary features found.");
+  if(!boundaryData.features||!boundaryData.features.length){
+   throw new Error("No features found in boundary file.");
   }
 
   loadRegionOptions();
-  document.getElementById("boundaryStatus").textContent =
-   `${boundaryData.features.length.toLocaleString()} boundary features loaded successfully.`;
 
  }catch(error){
-  console.error(error);
-  document.getElementById("boundaryStatus").textContent =
-   "Boundary service unavailable. Upload a GeoJSON boundary file to continue.";
+  console.error("Boundary loading error:",error);
+  $("boundaryStatus").textContent=
+   "Online boundary source unavailable. Upload a GeoJSON boundary file.";
  }
 }
 
+/* ============================================================
+   INITIALISE
+============================================================ */
+
+updateLegend();
 loadBoundaries();
 
 </script>
 </body>
 </html>
+
+
