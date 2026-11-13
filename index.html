@@ -3,86 +3,255 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SILKYSINGZ GEOAI | GAMBIA NIGHTTIME LIGHT INTELLIGENCE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GBoS GEOAI | Gambia Nighttime Light Intelligence</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
 :root{
- --bg:#07111d;--panel:#0d1b2a;--panel2:#102338;
- --line:#20374e;--text:#e9f2fb;--muted:#91a8bf;
- --accent:#31c5d8;--green:#42d6a4;--orange:#ffb454;
+ --bg:#07111d;
+ --panel:#0d1b2a;
+ --panel2:#102338;
+ --line:#20374e;
+ --text:#e9f2fb;
+ --muted:#91a8bf;
+ --accent:#31c5d8;
+ --green:#42d6a4;
+ --orange:#ffb454;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:Arial,Helvetica,sans-serif;
+}
 header{
- min-height:75px;padding:15px 20px;background:#091725;
- border-bottom:1px solid var(--line);display:flex;
- justify-content:space-between;align-items:center;gap:12px
+ min-height:75px;
+ padding:15px 20px;
+ background:#091725;
+ border-bottom:1px solid var(--line);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
 }
 .brand{font-size:16px;font-weight:800;letter-spacing:1px}
 .brand span{color:var(--accent)}
 .subtitle{font-size:10px;color:var(--muted);margin-top:5px}
-.status{font-size:10px;color:var(--green);border:1px solid var(--line);padding:8px 12px;border-radius:20px}
-.dashboard{
- display:grid;grid-template-columns:290px minmax(300px,1fr) 310px;
- gap:10px;padding:10px;height:calc(100vh - 75px);min-height:650px
+.status{
+ font-size:10px;color:var(--green);
+ border:1px solid var(--line);
+ padding:8px 12px;border-radius:20px
 }
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow-y:auto;min-height:0}
-.section{padding:14px;border-bottom:1px solid var(--line)}
-.eyebrow{font-size:10px;color:var(--accent);font-weight:800;letter-spacing:1.4px;margin-bottom:10px}
+.dashboard{
+ display:grid;
+ grid-template-columns:290px minmax(300px,1fr) 310px;
+ gap:10px;
+ padding:10px;
+ height:calc(100vh - 75px);
+ min-height:650px;
+}
+.panel{
+ background:var(--panel);
+ border:1px solid var(--line);
+ border-radius:8px;
+ overflow-y:auto;
+ min-height:0;
+ scrollbar-width:thin;
+}
+.section{
+ padding:14px;
+ border-bottom:1px solid var(--line);
+}
+.eyebrow{
+ font-size:10px;
+ color:var(--accent);
+ font-weight:800;
+ letter-spacing:1.4px;
+ margin-bottom:10px;
+}
 h2{font-size:14px;margin:0 0 7px}
 p{font-size:10px;color:var(--muted);line-height:1.55}
-label{display:block;font-size:10px;color:var(--muted);margin:11px 0 5px}
+label{
+ display:block;
+ font-size:10px;
+ color:var(--muted);
+ margin:11px 0 5px;
+}
 select,input{
- width:100%;padding:9px;background:#081522;color:var(--text);
- border:1px solid var(--line);border-radius:5px;font-size:11px
+ width:100%;
+ padding:9px;
+ background:#081522;
+ color:var(--text);
+ border:1px solid var(--line);
+ border-radius:5px;
+ font-size:11px;
 }
 input[type=checkbox]{width:auto}
 input[type=range]{padding:0}
-button{padding:10px;border:0;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer}
+button{
+ padding:10px;
+ border:0;
+ border-radius:5px;
+ font-size:10px;
+ font-weight:700;
+ cursor:pointer;
+}
 .primary{background:var(--accent);color:#04121c}
 .secondary{background:#1a3045;color:var(--text);border:1px solid var(--line)}
 .row{display:flex;gap:7px;margin-top:10px}
 .row button{flex:1}
-.check{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:10px;margin-top:10px}
-.map-panel{position:relative;min-width:0;min-height:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.check{
+ display:flex;
+ align-items:center;
+ gap:8px;
+ color:var(--muted);
+ font-size:10px;
+ margin-top:10px;
+}
+.map-panel{
+ position:relative;
+ min-width:0;
+ min-height:0;
+ border:1px solid var(--line);
+ border-radius:8px;
+ overflow:hidden;
+}
 #map{width:100%;height:100%;min-height:450px;background:#0b1722}
 .map-heading{
- position:absolute;z-index:700;top:12px;left:12px;
- background:#091725ed;border:1px solid var(--line);
- padding:10px 12px;border-radius:6px;pointer-events:none
+ position:absolute;
+ z-index:700;
+ top:12px;
+ left:12px;
+ background:#091725ed;
+ border:1px solid var(--line);
+ padding:10px 12px;
+ border-radius:6px;
+ pointer-events:none;
 }
 .map-heading strong{font-size:11px}
 .map-heading div{font-size:9px;color:var(--muted);margin-top:4px}
-.map-tools{position:absolute;z-index:700;top:12px;right:12px;display:flex;gap:5px}
-.map-tools button{background:#091725ed;color:white;border:1px solid var(--line)}
+.map-tools{
+ position:absolute;
+ z-index:700;
+ top:12px;
+ right:12px;
+ display:flex;
+ gap:5px;
+}
+.map-tools button{
+ background:#091725ed;
+ color:white;
+ border:1px solid var(--line);
+}
 .legend{
- position:absolute;z-index:700;bottom:18px;left:12px;width:260px;
- background:#091725ed;border:1px solid var(--line);padding:11px;border-radius:6px
+ position:absolute;
+ z-index:700;
+ bottom:18px;
+ left:12px;
+ width:260px;
+ background:#091725ed;
+ border:1px solid var(--line);
+ padding:11px;
+ border-radius:6px;
 }
 .legend-title{font-size:9px;font-weight:800;margin-bottom:8px}
 .gradient{height:13px;border-radius:3px}
-.legend-scale{display:flex;justify-content:space-between;color:var(--muted);font-size:9px;margin-top:5px}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
-.kpi{padding:11px;background:var(--panel2);border:1px solid var(--line);border-radius:5px}
+.legend-scale{
+ display:flex;
+ justify-content:space-between;
+ color:var(--muted);
+ font-size:9px;
+ margin-top:5px;
+}
+.kpis{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:7px;
+ margin-top:12px;
+}
+.kpi{
+ padding:11px;
+ background:var(--panel2);
+ border:1px solid var(--line);
+ border-radius:5px;
+ min-width:0;
+}
 .kpi .name{font-size:9px;color:var(--muted);text-transform:uppercase}
 .kpi .value{font-size:20px;font-weight:800;margin-top:6px;overflow-wrap:anywhere}
 .kpi small{font-size:9px;color:var(--muted)}
 .stat-table{width:100%;border-collapse:collapse;font-size:10px}
 .stat-table td{padding:8px 3px;border-bottom:1px solid var(--line)}
 .stat-table td:last-child{text-align:right;color:var(--accent);font-weight:700}
-.chart{height:175px;width:100%;margin-top:10px}
-.notice{padding:10px;background:#102338;border:1px solid var(--line);border-radius:5px;font-size:10px;color:var(--muted);line-height:1.6}
-#loadStatus,#boundaryStatus{font-size:10px;color:var(--orange);margin-top:8px;line-height:1.5}
-.progress{height:5px;background:#1a3045;border-radius:5px;margin-top:8px;overflow:hidden}
-.progress span{display:block;width:0;height:100%;background:var(--accent)}
-footer{padding:12px;text-align:center;color:var(--muted);font-size:10px;background:#091725;border-top:1px solid var(--line)}
+
+/* FIXED CHART CONTAINERS */
+.chart-wrap{
+ position:relative;
+ width:100%;
+ height:145px;
+ max-height:145px;
+ min-height:145px;
+ margin-top:9px;
+ overflow:hidden;
+}
+.chart-wrap canvas{
+ display:block;
+ width:100% !important;
+ height:145px !important;
+ max-height:145px !important;
+}
+.right-panel .section{overflow:hidden}
+.notice{
+ padding:10px;
+ background:#102338;
+ border:1px solid var(--line);
+ border-radius:5px;
+ font-size:10px;
+ color:var(--muted);
+ line-height:1.6;
+}
+#loadStatus,#boundaryStatus{
+ font-size:10px;
+ color:var(--orange);
+ margin-top:8px;
+ line-height:1.5;
+}
+.progress{
+ height:5px;
+ background:#1a3045;
+ border-radius:5px;
+ margin-top:8px;
+ overflow:hidden;
+}
+.progress span{
+ display:block;
+ width:0;
+ height:100%;
+ background:var(--accent);
+}
+footer{
+ padding:12px;
+ text-align:center;
+ color:var(--muted);
+ font-size:10px;
+ background:#091725;
+ border-top:1px solid var(--line);
+}
 .leaflet-container{background:#0b1722}
+
 @media(max-width:1050px){
- .dashboard{grid-template-columns:260px 1fr;height:auto}
- .right-panel{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
+ .dashboard{
+  grid-template-columns:260px 1fr;
+  height:auto;
+ }
+ .right-panel{
+  grid-column:1/-1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:start;
+ }
  #map{height:620px}
 }
 @media(max-width:700px){
@@ -96,9 +265,10 @@ footer{padding:12px;text-align:center;color:var(--muted);font-size:10px;backgrou
 </head>
 
 <body>
+
 <header>
  <div>
-  <div class="brand">SILKYSINGZ GEOAI <span>• NIGHTTIME LIGHT INTELLIGENCE</span></div>
+  <div class="brand">GBoS GEOAI <span>• NIGHTTIME LIGHT INTELLIGENCE</span></div>
   <div class="subtitle">THE GAMBIA | SATELLITE LIGHT DISTRIBUTION • SPATIAL ANALYSIS</div>
  </div>
  <div class="status" id="systemStatus">● INITIALISING</div>
@@ -106,12 +276,13 @@ footer{padding:12px;text-align:center;color:var(--muted);font-size:10px;backgrou
 
 <main class="dashboard">
 
-<!-- CONTROL PANEL -->
+<!-- LEFT: CONTROLS -->
 <aside class="panel">
+
  <section class="section">
   <div class="eyebrow">01 / GEOGRAPHIC CONTROL</div>
   <h2>Administrative selection</h2>
-  <p>Choose a region, district, ward or enumeration area. Imagery will be clipped to the selected polygon.</p>
+  <p>Select a region, district, ward or enumeration area. Imagery will be clipped to the selected geometry.</p>
 
   <label>Region</label>
   <select id="region"><option value="">All regions</option></select>
@@ -129,6 +300,7 @@ footer{padding:12px;text-align:center;color:var(--muted);font-size:10px;backgrou
    <button class="primary" id="applyBtn">APPLY SELECTION</button>
    <button class="secondary" id="resetBtn">RESET</button>
   </div>
+
   <div id="boundaryStatus">Loading boundaries...</div>
  </section>
 
@@ -159,13 +331,21 @@ footer{padding:12px;text-align:center;color:var(--muted);font-size:10px;backgrou
    <option value="terrain">Terrain</option>
   </select>
 
-  <div class="check"><input type="checkbox" id="showBoundary" checked><span>Show selected boundary</span></div>
-  <div class="check"><input type="checkbox" id="showNight" checked><span>Show clipped nighttime light</span></div>
+  <div class="check">
+   <input type="checkbox" id="showBoundary" checked>
+   <span>Show selected boundary</span>
+  </div>
+
+  <div class="check">
+   <input type="checkbox" id="showNight" checked>
+   <span>Show clipped nighttime light</span>
+  </div>
 
   <div class="row">
    <button class="primary" id="loadBtn">LOAD IMAGERY</button>
    <button class="secondary" id="clearBtn">CLEAR</button>
   </div>
+
   <div id="loadStatus">Waiting for imagery request.</div>
   <div class="progress"><span id="progressBar"></span></div>
  </section>
@@ -186,9 +366,10 @@ footer{padding:12px;text-align:center;color:var(--muted);font-size:10px;backgrou
    <button class="secondary" id="geoBtn">EXPORT GEOJSON</button>
   </div>
  </section>
+
 </aside>
 
-<!-- MAP -->
+<!-- CENTRE: MAP -->
 <section class="map-panel">
  <div id="map"></div>
 
@@ -205,23 +386,50 @@ footer{padding:12px;text-align:center;color:var(--muted);font-size:10px;backgrou
  <div class="legend">
   <div class="legend-title">CLIPPED IMAGE BRIGHTNESS INDEX</div>
   <div class="gradient" id="legendGradient"></div>
-  <div class="legend-scale"><span>0 • Low</span><span>128</span><span>255 • High</span></div>
-  <div style="font-size:9px;color:#91a8bf;margin-top:6px">8-bit image brightness index, not calibrated radiance.</div>
+  <div class="legend-scale">
+   <span>0 • Low</span><span>128</span><span>255 • High</span>
+  </div>
+  <div style="font-size:9px;color:#91a8bf;margin-top:6px">
+   8-bit image brightness index, not calibrated radiance.
+  </div>
  </div>
 </section>
 
-<!-- ANALYTICS -->
+<!-- RIGHT: ANALYTICS -->
 <aside class="panel right-panel">
+
  <section class="section">
   <div class="eyebrow">05 / SELECTED AREA INDICATORS</div>
   <h2 id="selectedName">The Gambia</h2>
+
   <div class="kpis">
-   <div class="kpi"><div class="name">Boundary features</div><div class="value" id="featureCount">—</div></div>
-   <div class="kpi"><div class="name">Boundary area</div><div class="value" id="areaValue">—</div><small>km²</small></div>
-   <div class="kpi"><div class="name">Mean brightness</div><div class="value" id="meanValue">—</div><small>0–255 index</small></div>
-   <div class="kpi"><div class="name">Maximum brightness</div><div class="value" id="maxValue">—</div><small>0–255 index</small></div>
-   <div class="kpi"><div class="name">Sampled pixels</div><div class="value" id="pixelCount">—</div></div>
-   <div class="kpi"><div class="name">Non-zero pixels</div><div class="value" id="litShare">—</div></div>
+   <div class="kpi">
+    <div class="name">Boundary features</div>
+    <div class="value" id="featureCount">—</div>
+   </div>
+   <div class="kpi">
+    <div class="name">Boundary area</div>
+    <div class="value" id="areaValue">—</div>
+    <small>km²</small>
+   </div>
+   <div class="kpi">
+    <div class="name">Mean brightness</div>
+    <div class="value" id="meanValue">—</div>
+    <small>0–255 index</small>
+   </div>
+   <div class="kpi">
+    <div class="name">Maximum brightness</div>
+    <div class="value" id="maxValue">—</div>
+    <small>0–255 index</small>
+   </div>
+   <div class="kpi">
+    <div class="name">Sampled pixels</div>
+    <div class="value" id="pixelCount">—</div>
+   </div>
+   <div class="kpi">
+    <div class="name">Non-zero pixels</div>
+    <div class="value" id="litShare">—</div>
+   </div>
   </div>
  </section>
 
@@ -241,24 +449,29 @@ footer{padding:12px;text-align:center;color:var(--muted);font-size:10px;backgrou
  <section class="section">
   <div class="eyebrow">07 / BRIGHTNESS DISTRIBUTION</div>
   <h2>Brightness histogram</h2>
-  <canvas id="histogram" class="chart"></canvas>
+  <div class="chart-wrap">
+   <canvas id="histogram"></canvas>
+  </div>
  </section>
 
  <section class="section">
   <div class="eyebrow">08 / BRIGHTNESS CLASSES</div>
   <h2>Pixel composition</h2>
-  <canvas id="classChart" class="chart"></canvas>
+  <div class="chart-wrap">
+   <canvas id="classChart"></canvas>
+  </div>
  </section>
 
  <section class="section">
   <div class="eyebrow">09 / METHODOLOGY</div>
   <div class="notice">
    <b>Boundary clipping</b><br>
-   Satellite tiles are clipped using the selected GeoJSON polygon geometry. Pixels outside the selected district, ward or EA are made transparent. The clipping is applied to the imagery canvas itself, not just to the map display extent.<br><br>
+   Satellite imagery is clipped using the selected GeoJSON polygon geometry. Pixels outside the selected district, ward or EA are made transparent.<br><br>
    <b>Data interpretation</b><br>
-   NASA GIBS VIIRS Day/Night Band ENCC is a rendered image product. Pixel values here are visual brightness indices from 0–255, not physical radiance values in nW/cm²/sr. For scientific radiance analysis, use a quantitative VIIRS raster product and quality-controlled zonal statistics.
+   NASA GIBS VIIRS Day/Night Band ENCC is a rendered image product. Pixel values are visual brightness indices from 0–255, not physical radiance values in nW/cm²/sr. For scientific radiance analysis, use a quantitative VIIRS raster product and quality-controlled zonal statistics.
   </div>
  </section>
+
 </aside>
 </main>
 
@@ -274,15 +487,16 @@ footer{padding:12px;text-align:center;color:var(--muted);font-size:10px;backgrou
 <script>
 "use strict";
 
-/* =====================================================
+/* ==========================================
    CONFIGURATION
-===================================================== */
+========================================== */
 
 const BOUNDARY_URL =
- "https://raw.githubusercontent.com/silkysingz94-oss/Socioeconomic-Intelligence/main/Census_EAs_Geo.json";
+"https://raw.githubusercontent.com/silkysingz94-oss/Socioeconomic-Intelligence/main/Census_EAs_Geo.json";
 
 const NASA_LAYER="VIIRS_SNPP_DayNightBand_ENCC";
 const NASA_MATRIX="GoogleMapsCompatible_Level8";
+
 const NASA_HOSTS=[
  "https://gibs.earthdata.nasa.gov",
  "https://gibs-a.earthdata.nasa.gov"
@@ -305,12 +519,13 @@ let nightLayer=null;
 let imageRequest=0;
 let imageStats=[];
 let loadedTileIds=new Set();
-let tileSuccess=0,tileFailures=0;
+let tileSuccess=0;
+let tileFailures=0;
 let charts={hist:null,classes:null};
 
-/* =====================================================
-   MAP AND BASEMAPS
-===================================================== */
+/* ==========================================
+   MAP
+========================================== */
 
 const map=L.map("map",{
  center:[13.45,-15.5],
@@ -322,24 +537,36 @@ const map=L.map("map",{
 });
 
 const base={
- dark:L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{maxZoom:19,attribution:"© CARTO"}),
- street:L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}),
- satellite:L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:19,attribution:"Esri"}),
- terrain:L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",{maxZoom:17,attribution:"OpenTopoMap"})
+ dark:L.tileLayer(
+  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  {maxZoom:19,attribution:"© CARTO"}
+ ),
+ street:L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {maxZoom:19,attribution:"© OpenStreetMap"}
+ ),
+ satellite:L.tileLayer(
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  {maxZoom:19,attribution:"Esri"}
+ ),
+ terrain:L.tileLayer(
+  "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+  {maxZoom:17,attribution:"OpenTopoMap"}
+ )
 };
 
 let activeBase=base.dark;
 activeBase.addTo(map);
 
-/* =====================================================
+/* ==========================================
    HELPERS
-===================================================== */
+========================================== */
 
-function valueOf(f,keys){
- const p=f.properties||{};
- for(const k of keys){
-  if(p[k]!==undefined&&p[k]!==null&&String(p[k]).trim()!==""){
-   return String(p[k]).trim();
+function valueOf(feature,keys){
+ const p=feature.properties||{};
+ for(const key of keys){
+  if(p[key]!==undefined&&p[key]!==null&&String(p[key]).trim()!==""){
+   return String(p[key]).trim();
   }
  }
  return "";
@@ -350,113 +577,141 @@ function unique(features,keys){
   .sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
 }
 
-function options(id,values,firstLabel){
+function fillOptions(id,values,firstLabel){
  const el=$(id);
  el.innerHTML="";
  const first=document.createElement("option");
- first.value="";first.textContent=firstLabel;el.appendChild(first);
- values.forEach(v=>{
-  const o=document.createElement("option");
-  o.value=v;o.textContent=v;el.appendChild(o);
+ first.value="";
+ first.textContent=firstLabel;
+ el.appendChild(first);
+ values.forEach(value=>{
+  const option=document.createElement("option");
+  option.value=value;
+  option.textContent=value;
+  el.appendChild(option);
  });
 }
 
-function number(n,d=2){
- return Number.isFinite(n)?n.toLocaleString("en-US",{
-  minimumFractionDigits:d,maximumFractionDigits:d
- }):"—";
+function number(value,d=2){
+ return Number.isFinite(value)
+  ?value.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d})
+  :"—";
 }
 
-function status(message,colour){
+function setStatus(message,colour){
  $("systemStatus").textContent="● "+message;
  $("systemStatus").style.color=colour||"var(--green)";
 }
 
-function progress(v){
- $("progressBar").style.width=Math.max(0,Math.min(100,v))+"%";
+function setProgress(value){
+ $("progressBar").style.width=Math.max(0,Math.min(100,value))+"%";
 }
 
-function download(content,name,type){
+function downloadFile(content,name,type){
  const blob=new Blob([content],{type});
  const url=URL.createObjectURL(blob);
  const a=document.createElement("a");
- a.href=url;a.download=name;a.click();
+ a.href=url;
+ a.download=name;
+ a.click();
  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
-/* =====================================================
-   LOAD ADMINISTRATIVE BOUNDARIES
-===================================================== */
+/* ==========================================
+   LOAD BOUNDARIES
+========================================== */
 
 async function loadBoundaries(){
- status("LOADING BOUNDARIES","var(--orange)");
+ setStatus("LOADING BOUNDARIES","var(--orange)");
  $("boundaryStatus").textContent="Retrieving GeoJSON...";
+
  try{
-  const r=await fetch(BOUNDARY_URL,{cache:"no-store"});
-  if(!r.ok)throw new Error("HTTP "+r.status);
-  const data=await r.json();
+  const response=await fetch(BOUNDARY_URL,{cache:"no-store"});
+  if(!response.ok)throw new Error("HTTP "+response.status);
+
+  const data=await response.json();
   if(!data.features)throw new Error("Invalid GeoJSON");
+
   boundaryData=data;
-  initialise();
-  $("boundaryStatus").textContent="Loaded "+data.features.length.toLocaleString()+" features.";
-  status("BOUNDARIES READY");
- }catch(e){
-  console.error(e);
-  $("boundaryStatus").textContent="Could not load online boundaries. Upload a GeoJSON file.";
-  status("BOUNDARY SOURCE ERROR","var(--orange)");
+  initialiseDashboard();
+
+  $("boundaryStatus").textContent=
+   "Loaded "+data.features.length.toLocaleString()+" boundary features.";
+
+  setStatus("BOUNDARIES READY");
+ }catch(error){
+  console.error(error);
+  $("boundaryStatus").textContent=
+   "Could not load online boundaries. Upload a GeoJSON file.";
+  setStatus("BOUNDARY SOURCE ERROR","var(--orange)");
  }
 }
 
-function initialise(){
- options("region",unique(boundaryData.features,FIELDS.region),"All regions");
+function initialiseDashboard(){
+ fillOptions("region",unique(boundaryData.features,FIELDS.region),"All regions");
  updateDistricts();
  applySelection(false);
 }
 
 function updateDistricts(){
- const r=$("region").value;
- const f=boundaryData.features.filter(x=>!r||valueOf(x,FIELDS.region)===r);
- options("district",unique(f,FIELDS.district),"All districts");
+ const region=$("region").value;
+ const filtered=boundaryData.features.filter(f=>
+  !region||valueOf(f,FIELDS.region)===region
+ );
+ fillOptions("district",unique(filtered,FIELDS.district),"All districts");
  updateWards();
 }
 
 function updateWards(){
- const r=$("region").value,d=$("district").value;
- const f=boundaryData.features.filter(x=>
-  (!r||valueOf(x,FIELDS.region)===r)&&
-  (!d||valueOf(x,FIELDS.district)===d)
+ const region=$("region").value;
+ const district=$("district").value;
+
+ const filtered=boundaryData.features.filter(f=>
+  (!region||valueOf(f,FIELDS.region)===region)&&
+  (!district||valueOf(f,FIELDS.district)===district)
  );
- options("ward",unique(f,FIELDS.ward),"All wards");
+
+ fillOptions("ward",unique(filtered,FIELDS.ward),"All wards");
  updateEAs();
 }
 
 function updateEAs(){
- const r=$("region").value,d=$("district").value,w=$("ward").value;
- const f=boundaryData.features.filter(x=>
-  (!r||valueOf(x,FIELDS.region)===r)&&
-  (!d||valueOf(x,FIELDS.district)===d)&&
-  (!w||valueOf(x,FIELDS.ward)===w)
+ const region=$("region").value;
+ const district=$("district").value;
+ const ward=$("ward").value;
+
+ const filtered=boundaryData.features.filter(f=>
+  (!region||valueOf(f,FIELDS.region)===region)&&
+  (!district||valueOf(f,FIELDS.district)===district)&&
+  (!ward||valueOf(f,FIELDS.ward)===ward)
  );
- const records=f.map(x=>({
-  code:valueOf(x,FIELDS.ea),
-  name:valueOf(x,["eaname","EA_NAME","ea_name"])
+
+ const records=filtered.map(f=>({
+  code:valueOf(f,FIELDS.ea),
+  name:valueOf(f,["eaname","EA_NAME","ea_name"])
  })).filter(x=>x.code);
- const distinct=[...new Map(records.map(x=>[x.code,x])).values()];
+
+ const uniqueRecords=[...new Map(records.map(x=>[x.code,x])).values()];
+
  $("ea").innerHTML="";
  const first=document.createElement("option");
- first.value="";first.textContent="All enumeration areas";
+ first.value="";
+ first.textContent="All enumeration areas";
  $("ea").appendChild(first);
- distinct.sort((a,b)=>a.code.localeCompare(b.code,undefined,{numeric:true})).forEach(x=>{
-  const o=document.createElement("option");
-  o.value=x.code;
-  o.textContent=x.name&&x.name!==x.code?x.code+" — "+x.name:x.code;
-  $("ea").appendChild(o);
+
+ uniqueRecords.sort((a,b)=>a.code.localeCompare(b.code,undefined,{numeric:true}))
+ .forEach(x=>{
+  const option=document.createElement("option");
+  option.value=x.code;
+  option.textContent=x.name&&x.name!==x.code
+   ?x.code+" — "+x.name:x.code;
+  $("ea").appendChild(option);
  });
 }
 
-/* =====================================================
-   SELECTED GEOGRAPHY
-===================================================== */
+/* ==========================================
+   SELECTED AREA
+========================================== */
 
 function getSelection(){
  return {
@@ -490,6 +745,7 @@ function applySelection(zoom=true){
  if(!boundaryData)return;
 
  selectedFeatures=filterFeatures();
+
  if(!selectedFeatures.length){
   $("boundaryStatus").textContent="No matching boundaries found.";
   return;
@@ -504,30 +760,36 @@ function applySelection(zoom=true){
 
  selectedLayer=L.geoJSON(selectedGeometry,{
   style:{
-   color:"#35d4e7",weight:2,opacity:1,
-   fillColor:"#20bdd0",fillOpacity:.04
+   color:"#35d4e7",
+   weight:2,
+   opacity:1,
+   fillColor:"#20bdd0",
+   fillOpacity:.04
   }
  });
 
  if($("showBoundary").checked)selectedLayer.addTo(map);
 
  updateAreaStats();
- $("mapSubtitle").textContent=selectionLabel()+" • imagery clipped to selected boundary";
+
+ $("mapSubtitle").textContent=
+  selectionLabel()+" • imagery clipped to selected boundary";
 
  if(zoom)zoomToSelected();
 
- // Let Leaflet finish fitting the map before requesting the new tiles.
  cancelImagery();
+
  if($("showNight").checked){
-  setTimeout(()=>loadNightImagery(),250);
+  setTimeout(loadNightImagery,250);
  }
 }
 
 function zoomToSelected(){
  if(!selectedLayer)return;
- const b=selectedLayer.getBounds();
- if(b.isValid()){
-  map.fitBounds(b,{
+ const bounds=selectedLayer.getBounds();
+
+ if(bounds.isValid()){
+  map.fitBounds(bounds,{
    padding:[40,40],
    maxZoom:selectedFeatures.length===1?13:11,
    animate:false
@@ -538,66 +800,66 @@ function zoomToSelected(){
 function updateAreaStats(){
  $("selectedName").textContent=selectionLabel();
  $("featureCount").textContent=selectedFeatures.length.toLocaleString();
+
  let area=0;
  selectedFeatures.forEach(f=>{
   try{area+=turf.area(f)}catch(e){}
  });
+
  $("areaValue").textContent=number(area/1e6,2);
 }
 
-/* =====================================================
-   GEOMETRY-TO-CANVAS CLIPPING
-===================================================== */
+/* ==========================================
+   GEOMETRY CLIPPING
+========================================== */
 
-/*
- Convert each GeoJSON polygon ring to canvas tile coordinates.
- Leaflet projects geographic coordinates into the same world
- pixel coordinate system used by the XYZ tile grid.
-
- This is the essential clipping operation: the selected
- geometry is converted into a Path2D and used as the canvas
- clipping mask BEFORE the NASA image is drawn.
-*/
-
-function addRingToPath(path,ring,zoom,tileOriginX,tileOriginY){
+function addRingToPath(path,ring,zoom,originX,originY){
  if(!ring||ring.length<3)return;
 
  ring.forEach((coord,index)=>{
-  const lon=coord[0],lat=coord[1];
-  const point=map.project([lat,lon],zoom);
-  const x=point.x-tileOriginX;
-  const y=point.y-tileOriginY;
+  const point=map.project([coord[1],coord[0]],zoom);
+  const x=point.x-originX;
+  const y=point.y-originY;
 
   if(index===0)path.moveTo(x,y);
   else path.lineTo(x,y);
  });
+
  path.closePath();
 }
 
-function addPolygonToPath(path,polygon,zoom,ox,oy){
+function addPolygonToPath(path,polygon,zoom,originX,originY){
  if(!Array.isArray(polygon))return;
- polygon.forEach(ring=>addRingToPath(path,ring,zoom,ox,oy));
+ polygon.forEach(ring=>
+  addRingToPath(path,ring,zoom,originX,originY)
+ );
 }
 
-function geometryToPath(geometry,zoom,ox,oy){
+function geometryToPath(geometry,zoom,originX,originY){
  const path=new Path2D();
- if(!geometry)return path;
 
  function visit(g){
   if(!g)return;
+
   switch(g.type){
    case "Polygon":
-    addPolygonToPath(path,g.coordinates,zoom,ox,oy);
+    addPolygonToPath(path,g.coordinates,zoom,originX,originY);
     break;
+
    case "MultiPolygon":
-    g.coordinates.forEach(poly=>addPolygonToPath(path,poly,zoom,ox,oy));
+    g.coordinates.forEach(polygon=>
+     addPolygonToPath(path,polygon,zoom,originX,originY)
+    );
     break;
+
    case "GeometryCollection":
     (g.geometries||[]).forEach(visit);
     break;
+
    case "Feature":
     visit(g.geometry);
     break;
+
    case "FeatureCollection":
     (g.features||[]).forEach(visit);
     break;
@@ -608,57 +870,9 @@ function geometryToPath(geometry,zoom,ox,oy){
  return path;
 }
 
-/*
- A tile is only displayed where the selected boundary exists.
- The even-odd fill rule also respects polygon holes.
- Transparent pixels outside the clipping path are excluded
- from the image statistics.
-*/
-
-function clipAndColour(ctx,img,coords){
- const z=coords.z;
- const originX=coords.x*256;
- const originY=coords.y*256;
-
- const path=geometryToPath(
-  selectedGeometry,z,originX,originY
- );
-
- ctx.clearRect(0,0,256,256);
- ctx.save();
- ctx.clip(path,"evenodd");
- ctx.drawImage(img,0,0,256,256);
-
- const data=ctx.getImageData(0,0,256,256);
- const px=data.data;
- const samples=[];
- const alphaOpacity=Number($("opacity").value)/100;
-
- for(let i=0;i<px.length;i+=4){
-  if(px[i+3]===0)continue;
-
-  const brightness=Math.round(
-   px[i]*.299+px[i+1]*.587+px[i+2]*.114
-  );
-
-  samples.push(brightness);
-
-  const rgb=colourFor(brightness);
-  px[i]=rgb[0];
-  px[i+1]=rgb[1];
-  px[i+2]=rgb[2];
-  px[i+3]=Math.round(px[i+3]*alphaOpacity);
- }
-
- ctx.putImageData(data,0,0);
- ctx.restore();
-
- return samples;
-}
-
-/* =====================================================
+/* ==========================================
    COLOUR PALETTES
-===================================================== */
+========================================== */
 
 const palettes={
  multi:[
@@ -689,65 +903,129 @@ function colourFor(value){
 
  for(let i=0;i<stops.length-1;i++){
   if(t>=stops[i][0]&&t<=stops[i+1][0]){
-   a=stops[i];b=stops[i+1];break;
+   a=stops[i];
+   b=stops[i+1];
+   break;
   }
  }
- const f=(t-a[0])/(b[0]-a[0]||1);
- return a[1].map((v,i)=>Math.round(v+(b[1][i]-v)*f));
+
+ const fraction=(t-a[0])/(b[0]-a[0]||1);
+
+ return a[1].map((v,i)=>
+  Math.round(v+(b[1][i]-v)*fraction)
+ );
 }
 
 function updateLegend(){
  const stops=palettes[$("palette").value]||palettes.multi;
- const g=stops.map(s=>"rgb("+s[1].join(",")+") "+(s[0]*100)+"%").join(",");
- $("legendGradient").style.background="linear-gradient(90deg,"+g+")";
+
+ const gradient=stops.map(s=>
+  "rgb("+s[1].join(",")+") "+(s[0]*100)+"%"
+ ).join(",");
+
+ $("legendGradient").style.background="linear-gradient(90deg,"+gradient+")";
 }
 
-/* =====================================================
-   NASA GIBS TILE LOADER WITH GEOMETRY MASK
-===================================================== */
+/* ==========================================
+   CLIP IMAGE TO SELECTED POLYGON
+========================================== */
+
+function clipAndColour(ctx,img,coords){
+ const zoom=coords.z;
+ const originX=coords.x*256;
+ const originY=coords.y*256;
+
+ const path=geometryToPath(
+  selectedGeometry,zoom,originX,originY
+ );
+
+ ctx.clearRect(0,0,256,256);
+
+ ctx.save();
+ ctx.clip(path,"evenodd");
+ ctx.drawImage(img,0,0,256,256);
+
+ const imageData=ctx.getImageData(0,0,256,256);
+ const px=imageData.data;
+ const samples=[];
+ const opacity=Number($("opacity").value)/100;
+
+ for(let i=0;i<px.length;i+=4){
+  if(px[i+3]===0)continue;
+
+  const brightness=Math.round(
+   px[i]*.299+px[i+1]*.587+px[i+2]*.114
+  );
+
+  samples.push(brightness);
+
+  const rgb=colourFor(brightness);
+  px[i]=rgb[0];
+  px[i+1]=rgb[1];
+  px[i+2]=rgb[2];
+  px[i+3]=Math.round(px[i+3]*opacity);
+ }
+
+ ctx.putImageData(imageData,0,0);
+ ctx.restore();
+
+ return samples;
+}
+
+/* ==========================================
+   NASA TILE LAYER
+========================================== */
 
 function tileURL(host,date,z,x,y){
  return host+"/wmts/epsg3857/best/"+NASA_LAYER+
- "/default/"+date+"/"+NASA_MATRIX+"/"+z+"/"+y+"/"+x+".png";
+  "/default/"+date+"/"+NASA_MATRIX+"/"+z+"/"+y+"/"+x+".png";
 }
 
 const ClippedNightLayer=L.GridLayer.extend({
 
  createTile:function(coords,done){
   const canvas=document.createElement("canvas");
-  canvas.width=256;canvas.height=256;
-  const ctx=canvas.getContext("2d",{willReadFrequently:true});
+  canvas.width=256;
+  canvas.height=256;
 
+  const ctx=canvas.getContext("2d",{willReadFrequently:true});
   const token=imageRequest;
   const tileKey=coords.z+"/"+coords.x+"/"+coords.y;
   const date=$("imageDate").value;
+
   let hostIndex=0;
   let finished=false;
 
-  const finish=err=>{
+  function finish(error){
    if(finished)return;
    finished=true;
-   done(err,canvas);
-  };
+   done(error,canvas);
+  }
 
   const img=new Image();
   img.crossOrigin="anonymous";
 
-  const tryHost=()=>{
+  function tryHost(){
    if(token!==imageRequest){
     finish(null);
     return;
    }
+
    if(hostIndex>=NASA_HOSTS.length){
     tileFailures++;
     updateLoadStatus();
     finish(null);
     return;
    }
+
    img.src=tileURL(
-    NASA_HOSTS[hostIndex++],date,coords.z,coords.x,coords.y
+    NASA_HOSTS[hostIndex++],
+    date,
+    coords.z,
+    coords.x,
+    coords.y
    );
-  };
+  }
 
   img.onload=()=>{
    if(token!==imageRequest){
@@ -756,10 +1034,8 @@ const ClippedNightLayer=L.GridLayer.extend({
    }
 
    try{
-    // Clip the original image to the selected boundary first.
     const values=clipAndColour(ctx,img,coords);
 
-    // Record only pixels that survived the geometry mask.
     if(!loadedTileIds.has(tileKey)){
      loadedTileIds.add(tileKey);
      imageStats.push(...values);
@@ -769,8 +1045,8 @@ const ClippedNightLayer=L.GridLayer.extend({
     updateLoadStatus();
     finish(null);
 
-   }catch(err){
-    console.error("Image clipping error:",err);
+   }catch(error){
+    console.error("Tile clipping error:",error);
     tileFailures++;
     updateLoadStatus();
     finish(null);
@@ -792,13 +1068,14 @@ const ClippedNightLayer=L.GridLayer.extend({
 
 function cancelImagery(){
  imageRequest++;
+
  if(nightLayer){
   map.removeLayer(nightLayer);
   nightLayer=null;
  }
 }
 
-function resetStats(){
+function resetStatistics(){
  imageStats=[];
  loadedTileIds.clear();
  tileSuccess=0;
@@ -810,11 +1087,14 @@ function loadNightImagery(){
  if(!selectedGeometry||!$("showNight").checked)return;
 
  cancelImagery();
- resetStats();
+ resetStatistics();
 
- const thisRequest=imageRequest;
- $("loadStatus").textContent="Loading imagery and clipping to selected geometry...";
- progress(5);
+ const request=imageRequest;
+
+ $("loadStatus").textContent=
+  "Loading imagery and clipping to selected geometry...";
+
+ setProgress(5);
 
  nightLayer=new ClippedNightLayer({
   tileSize:256,
@@ -829,36 +1109,40 @@ function loadNightImagery(){
  nightLayer.addTo(map);
 
  const start=Date.now();
+
  const timer=setInterval(()=>{
-  if(thisRequest!==imageRequest){
+  if(request!==imageRequest){
    clearInterval(timer);
    return;
   }
-  progress(Math.min(90,5+(Date.now()-start)/1000*4));
+  setProgress(Math.min(90,5+(Date.now()-start)/1000*4));
  },500);
 
  nightLayer.once("load",()=>{
   clearInterval(timer);
-  if(thisRequest!==imageRequest)return;
-  progress(100);
+
+  if(request!==imageRequest)return;
+
+  setProgress(100);
   updateAnalytics();
+
   $("loadStatus").textContent=
    "Clipped imagery loaded • "+tileSuccess+
    " successful tiles • "+tileFailures+" failed tiles.";
  });
 
  setTimeout(()=>{
-  if(thisRequest!==imageRequest)return;
+  if(request!==imageRequest)return;
+
   updateAnalytics();
 
   if(imageStats.length){
    $("loadStatus").textContent=
-    "Selected-area image sample: "+
-    imageStats.length.toLocaleString()+
-    " pixels inside the selected geometry.";
+    "Selected-area sample: "+imageStats.length.toLocaleString()+
+    " pixels inside selected geometry.";
   }else{
    $("loadStatus").textContent=
-    "No readable pixels yet. Check imagery date or NASA tile availability.";
+    "No readable pixels. Check the imagery date or NASA GIBS availability.";
   }
  },7000);
 }
@@ -866,12 +1150,13 @@ function loadNightImagery(){
 function updateLoadStatus(){
  $("loadStatus").textContent=
   "Loading selected-area imagery • "+
-  tileSuccess+" successful tiles • "+tileFailures+" failed tiles";
+  tileSuccess+" successful tiles • "+
+  tileFailures+" failed tiles";
 }
 
-/* =====================================================
-   STATISTICS AND CHARTS
-===================================================== */
+/* ==========================================
+   STATISTICS
+========================================== */
 
 function calculateStats(values){
  if(!values.length)return null;
@@ -880,22 +1165,141 @@ function calculateStats(values){
  const n=values.length;
  const sum=values.reduce((a,b)=>a+b,0);
  const mean=sum/n;
- const median=n%2?sorted[(n-1)/2]:(sorted[n/2-1]+sorted[n/2])/2;
- const variance=values.reduce((a,b)=>a+(b-mean)**2,0)/n;
+
+ const median=n%2
+  ?sorted[(n-1)/2]
+  :(sorted[n/2-1]+sorted[n/2])/2;
+
+ const variance=values.reduce(
+  (a,b)=>a+(b-mean)**2,0
+ )/n;
+
  const nonzero=values.filter(v=>v>0).length;
 
  return{
-  n,mean,median,min:sorted[0],max:sorted[n-1],
-  sd:Math.sqrt(variance),nonzero
+  n,mean,median,
+  min:sorted[0],
+  max:sorted[n-1],
+  sd:Math.sqrt(variance),
+  nonzero
  };
+}
+
+/* ==========================================
+   CHARTS - FIXED HEIGHT
+========================================== */
+
+function updateCharts(values){
+
+ const bins=Array(16).fill(0);
+
+ values.forEach(v=>{
+  bins[Math.min(15,Math.floor(v/16))]++;
+ });
+
+ const labels=bins.map((_,i)=>
+  (i*16)+"–"+(i*16+15)
+ );
+
+ if(charts.hist)charts.hist.destroy();
+
+ charts.hist=new Chart($("histogram"),{
+  type:"bar",
+  data:{
+   labels,
+   datasets:[{
+    label:"Pixel count",
+    data:bins,
+    backgroundColor:"#31c5d8",
+    borderRadius:2,
+    barPercentage:.85,
+    categoryPercentage:.85
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   animation:false,
+   plugins:{
+    legend:{display:false},
+    tooltip:{enabled:true}
+   },
+   layout:{padding:{top:2,bottom:0,left:0,right:2}},
+   scales:{
+    x:{
+     ticks:{
+      color:"#91a8bf",
+      font:{size:8},
+      maxRotation:45,
+      minRotation:45,
+      autoSkip:true
+     },
+     grid:{display:false}
+    },
+    y:{
+     beginAtZero:true,
+     ticks:{color:"#91a8bf",font:{size:8},maxTicksLimit:4},
+     grid:{color:"#20374e"}
+    }
+   }
+  }
+ });
+
+ const names=["Very low","Low","Moderate","High","Very high"];
+ const bounds=[0,32,64,128,192,256];
+
+ const counts=names.map((_,i)=>
+  values.filter(v=>v>=bounds[i]&&v<bounds[i+1]).length
+ );
+
+ if(charts.classes)charts.classes.destroy();
+
+ charts.classes=new Chart($("classChart"),{
+  type:"doughnut",
+  data:{
+   labels:names,
+   datasets:[{
+    data:counts,
+    backgroundColor:[
+     "#2537b7","#087fca","#05c5c4",
+     "#d4e52b","#ef3b20"
+    ],
+    borderColor:"#0d1b2a",
+    borderWidth:2
+   }]
+  },
+  options:{
+   responsive:true,
+   maintainAspectRatio:false,
+   animation:false,
+   cutout:"60%",
+   plugins:{
+    legend:{
+     position:"right",
+     labels:{
+      color:"#b8c9d9",
+      font:{size:9},
+      boxWidth:9,
+      padding:8
+     }
+    },
+    tooltip:{enabled:true}
+   },
+   layout:{padding:2}
+  }
+ });
 }
 
 function updateAnalytics(){
  const s=calculateStats(imageStats);
+
  if(!s){
-  ["meanValue","maxValue","pixelCount","litShare",
+  [
+   "meanValue","maxValue","pixelCount","litShare",
    "statMean","statMedian","statMin","statMax",
-   "statSD","statNonzero"].forEach(id=>$(id).textContent="—");
+   "statSD","statNonzero"
+  ].forEach(id=>$(id).textContent="—");
+
   updateCharts([]);
   return;
  }
@@ -915,54 +1319,9 @@ function updateAnalytics(){
  updateCharts(imageStats);
 }
 
-function updateCharts(values){
- const bins=Array(16).fill(0);
- values.forEach(v=>bins[Math.min(15,Math.floor(v/16))]++);
-
- const labels=bins.map((_,i)=>i*16+"–"+(i*16+15));
- if(charts.hist)charts.hist.destroy();
-
- charts.hist=new Chart($("histogram"),{
-  type:"bar",
-  data:{labels,datasets:[{
-   data:bins,label:"Pixel count",
-   backgroundColor:"#31c5d8",borderRadius:3
-  }]},
-  options:{
-   responsive:true,maintainAspectRatio:false,
-   plugins:{legend:{display:false}},
-   scales:{
-    x:{ticks:{color:"#91a8bf",font:{size:8},maxRotation:45},grid:{display:false}},
-    y:{ticks:{color:"#91a8bf",font:{size:9}},grid:{color:"#20374e"}}
-   }
-  }
- });
-
- const names=["Very low","Low","Moderate","High","Very high"];
- const bounds=[0,32,64,128,192,256];
- const counts=names.map((_,i)=>values.filter(v=>v>=bounds[i]&&v<bounds[i+1]).length);
-
- if(charts.classes)charts.classes.destroy();
- charts.classes=new Chart($("classChart"),{
-  type:"doughnut",
-  data:{
-   labels:names,
-   datasets:[{
-    data:counts,
-    backgroundColor:["#2537b7","#087fca","#05c5c4","#d4e52b","#ef3b20"],
-    borderColor:"#0d1b2a",borderWidth:2
-   }]
-  },
-  options:{
-   responsive:true,maintainAspectRatio:false,
-   plugins:{legend:{position:"bottom",labels:{color:"#b8c9d9",font:{size:9},boxWidth:10}}}
-  }
- });
-}
-
-/* =====================================================
+/* ==========================================
    EVENTS
-===================================================== */
+========================================== */
 
 $("region").addEventListener("change",()=>{
  updateDistricts();
@@ -979,16 +1338,24 @@ $("ward").addEventListener("change",()=>{
  applySelection(true);
 });
 
-$("ea").addEventListener("change",()=>applySelection(true));
-$("applyBtn").addEventListener("click",()=>applySelection(true));
+$("ea").addEventListener("change",()=>{
+ applySelection(true);
+});
+
+$("applyBtn").addEventListener("click",()=>{
+ applySelection(true);
+});
 
 $("resetBtn").addEventListener("click",()=>{
  $("region").value="";
  updateDistricts();
+
  $("district").value="";
  updateWards();
+
  $("ward").value="";
  updateEAs();
+
  $("ea").value="";
  applySelection(true);
 });
@@ -997,7 +1364,10 @@ $("zoomBtn").addEventListener("click",zoomToSelected);
 
 $("nationalBtn").addEventListener("click",()=>{
  if(selectedLayer){
-  map.fitBounds(selectedLayer.getBounds(),{padding:[30,30],animate:false});
+  map.fitBounds(selectedLayer.getBounds(),{
+   padding:[30,30],
+   animate:false
+  });
  }
 });
 
@@ -1005,14 +1375,15 @@ $("loadBtn").addEventListener("click",loadNightImagery);
 
 $("clearBtn").addEventListener("click",()=>{
  cancelImagery();
- resetStats();
- progress(0);
+ resetStatistics();
+ setProgress(0);
  $("loadStatus").textContent="Imagery removed.";
 });
 
 $("showNight").addEventListener("change",()=>{
- if($("showNight").checked)loadNightImagery();
- else{
+ if($("showNight").checked){
+  loadNightImagery();
+ }else{
   cancelImagery();
   $("loadStatus").textContent="Nighttime light hidden.";
  }
@@ -1020,8 +1391,12 @@ $("showNight").addEventListener("change",()=>{
 
 $("showBoundary").addEventListener("change",()=>{
  if(!selectedLayer)return;
- if($("showBoundary").checked)selectedLayer.addTo(map);
- else map.removeLayer(selectedLayer);
+
+ if($("showBoundary").checked){
+  selectedLayer.addTo(map);
+ }else{
+  map.removeLayer(selectedLayer);
+ }
 });
 
 $("palette").addEventListener("change",()=>{
@@ -1041,31 +1416,45 @@ $("basemap").addEventListener("change",()=>{
  map.removeLayer(activeBase);
  activeBase=base[$("basemap").value];
  activeBase.addTo(map);
- if(nightLayer)nightLayer.bringToFront();
- if(selectedLayer&&$("showBoundary").checked)selectedLayer.bringToFront();
-});
 
-$("geoFile").addEventListener("change",async e=>{
- const file=e.target.files[0];
- if(!file)return;
- try{
-  const data=JSON.parse(await file.text());
-  if(!data.features)throw new Error("Expected GeoJSON FeatureCollection");
-  boundaryData=data;
-  initialise();
-  $("boundaryStatus").textContent="Uploaded "+data.features.length+" boundary features.";
-  status("UPLOADED BOUNDARIES READY");
- }catch(err){
-  alert("GeoJSON error: "+err.message);
+ if(nightLayer)nightLayer.bringToFront();
+
+ if(selectedLayer&&$("showBoundary").checked){
+  selectedLayer.bringToFront();
  }
 });
 
-/* =====================================================
+$("geoFile").addEventListener("change",async event=>{
+ const file=event.target.files[0];
+ if(!file)return;
+
+ try{
+  const data=JSON.parse(await file.text());
+
+  if(!data.features){
+   throw new Error("Expected GeoJSON FeatureCollection");
+  }
+
+  boundaryData=data;
+  initialiseDashboard();
+
+  $("boundaryStatus").textContent=
+   "Uploaded "+data.features.length+" boundary features.";
+
+  setStatus("UPLOADED BOUNDARIES READY");
+
+ }catch(error){
+  alert("GeoJSON error: "+error.message);
+ }
+});
+
+/* ==========================================
    EXPORTS
-===================================================== */
+========================================== */
 
 $("csvBtn").addEventListener("click",()=>{
  const s=calculateStats(imageStats);
+
  const rows=[
   ["Indicator","Value","Unit"],
   ["Selected area",selectionLabel(),""],
@@ -1082,19 +1471,30 @@ $("csvBtn").addEventListener("click",()=>{
   ["Interpretation","8-bit visual brightness index; not calibrated radiance",""]
  ];
 
- const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
- download(csv,"GBoS_Selected_Area_Nighttime_Light.csv","text/csv");
+ const csv=rows.map(row=>
+  row.map(value=>'"'+String(value).replace(/"/g,'""')+'"').join(",")
+ ).join("\n");
+
+ downloadFile(
+  csv,
+  "GBoS_Selected_Area_Nighttime_Light.csv",
+  "text/csv"
+ );
 });
 
 $("geoBtn").addEventListener("click",()=>{
  if(!selectedGeometry)return;
- download(JSON.stringify(selectedGeometry,null,2),
-  "GBoS_Selected_Boundary.geojson","application/geo+json");
+
+ downloadFile(
+  JSON.stringify(selectedGeometry,null,2),
+  "GBoS_Selected_Boundary.geojson",
+  "application/geo+json"
+ );
 });
 
-/* =====================================================
-   START
-===================================================== */
+/* ==========================================
+   INITIALISE
+========================================== */
 
 updateLegend();
 updateCharts([]);
