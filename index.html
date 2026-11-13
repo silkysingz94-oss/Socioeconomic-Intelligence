@@ -4,1416 +4,1386 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GBoS GEOAI | Socioeconomic Intelligence</title>
+<title>GBoS GEOAI | Gambia Night-time Lights Intelligence</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.2.0/turf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap">
 
 <style>
-:root{
- --bg:#07111c;--panel:#101e2c;--panel2:#15283a;
- --line:#294154;--text:#eaf2f8;--muted:#91a7b9;
- --cyan:#40c4d8;--gold:#f4c45e;--green:#56c995;
- --red:#ef7777;
+:root {
+  --bg:#080e18; --panel:#101a29; --panel2:#142235;
+  --line:#26374d; --text:#e8eff8; --muted:#8fa2ba;
+  --cyan:#55d6e8; --blue:#4c91ff; --orange:#f6ad55;
+  --green:#56d6a0; --red:#ff7777;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;overflow:hidden}
-body{
- background:var(--bg);color:var(--text);
- font-family:Inter,Arial,sans-serif;
- display:flex;flex-direction:column
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
+font-family:Inter,Arial,sans-serif}
+body{overflow:hidden}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{height:100vh;display:flex;flex-direction:column}
+.topbar{height:70px;flex:none;display:flex;align-items:center;justify-content:space-between;
+padding:0 22px;border-bottom:1px solid var(--line);background:#0b1421}
+.brand{display:flex;align-items:center;gap:13px}
+.brand-mark{width:38px;height:38px;border-radius:10px;background:#17334a;
+display:grid;place-items:center;color:var(--cyan);font-size:20px;font-weight:800}
+.brand h1{font-size:14px;letter-spacing:1.4px;margin:0;font-weight:800}
+.brand p{font-size:10px;color:var(--muted);margin:4px 0 0;letter-spacing:1px}
+.top-right{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:10px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px}
+.workspace{flex:1;min-height:0;display:grid;grid-template-columns:310px minmax(350px,1fr) 370px;gap:10px;padding:10px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-height:0;overflow:hidden}
+.side{display:flex;flex-direction:column;min-height:0}
+.panel-head{padding:15px 16px;border-bottom:1px solid var(--line);flex:none}
+.panel-head .eyebrow{font:10px "DM Mono",monospace;color:var(--cyan);letter-spacing:1.2px}
+.panel-head h2{font-size:13px;margin:7px 0 0}
+.panel-body{padding:14px;overflow-y:auto;min-height:0;flex:1}
+.section{padding:0 0 15px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.section:last-child{border:0}
+.section-title{font:10px "DM Mono",monospace;color:var(--cyan);letter-spacing:1px;margin:0 0 11px}
+label{display:block;font-size:10px;color:var(--muted);margin:10px 0 6px}
+select,input[type="date"],input[type="text"]{width:100%;background:#0b1523;border:1px solid #2a3b52;
+color:var(--text);padding:9px 10px;border-radius:6px;font-size:11px;outline:none}
+input[type="file"]{width:100%;font-size:10px;color:var(--muted)}
+input[type="range"]{width:100%;accent-color:var(--cyan)}
+.small-note{font-size:10px;color:var(--muted);line-height:1.55;margin-top:7px}
+.btn-row{display:flex;gap:7px;margin-top:11px}
+.btn{border:1px solid #31445d;background:#17263a;color:var(--text);padding:9px 11px;
+border-radius:6px;font-size:10px;font-weight:700;flex:1}
+.btn.primary{background:#16465a;border-color:#26748a;color:#dffaff}
+.btn:hover{filter:brightness(1.2)}
+.status{font-size:10px;color:var(--muted);line-height:1.5;padding:9px;
+background:#0b1523;border:1px solid var(--line);border-radius:6px;margin-top:9px;overflow-wrap:anywhere}
+.status.ok{border-color:#24684f;color:#83e4b8}
+.status.warn{border-color:#78552c;color:#ffd08b}
+.status.error{border-color:#743b46;color:#ff9da6}
+.map-panel{position:relative;min-height:0;overflow:hidden}
+#map{width:100%;height:100%;background:#101b29}
+.map-tag{position:absolute;z-index:500;top:12px;left:12px;background:#0b1421eF;
+border:1px solid #34465d;padding:8px 10px;border-radius:6px;font:10px "DM Mono",monospace;
+pointer-events:none}
+.map-legend{position:absolute;z-index:500;bottom:18px;left:12px;background:#0b1421ed;
+border:1px solid #34465d;padding:10px 12px;border-radius:7px;font-size:10px;line-height:1.8}
+.swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px}
+.kpi{background:#0b1523;border:1px solid var(--line);padding:12px;border-radius:7px;min-width:0}
+.kpi .klabel{font-size:9px;color:var(--muted);letter-spacing:.5px}
+.kpi .value{font:20px "DM Mono",monospace;color:var(--cyan);margin-top:7px;overflow-wrap:anywhere}
+.kpi .unit{font-size:9px;color:var(--muted);margin-top:3px}
+.table-wrap{overflow:auto;max-height:300px;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:10px;white-space:nowrap}
+th{position:sticky;top:0;background:#1a2a3e;color:#a9c4df;text-align:left;padding:9px 8px}
+td{padding:8px;border-top:1px solid #24354a;color:#d4deea}
+tr:hover td{background:#14243a}
+.chart-box{height:220px;background:#0b1523;border:1px solid var(--line);border-radius:7px;padding:10px}
+#radianceChart{width:100%;height:100%}
+.footer{height:27px;flex:none;border-top:1px solid var(--line);display:flex;align-items:center;
+justify-content:space-between;padding:0 17px;color:#72869e;font-size:9px;letter-spacing:.3px}
+#loading{color:var(--orange)}
+@media(max-width:1050px){
+ .workspace{grid-template-columns:270px minmax(300px,1fr) 320px}
 }
-header{
- flex:0 0 auto;padding:13px 22px;background:#0c1a28;
- border-bottom:1px solid var(--line);
- display:flex;justify-content:space-between;
- align-items:center;gap:12px
-}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{
- width:40px;height:40px;border-radius:9px;
- display:grid;place-items:center;background:#193e50;
- color:var(--cyan);font-size:19px;font-weight:900
-}
-h1{font-size:16px;margin:0;letter-spacing:.8px}
-.subtitle{font-size:10px;color:var(--muted);margin-top:5px}
-.status{
- border:1px solid var(--line);border-radius:20px;
- padding:7px 11px;font-size:10px;color:var(--green)
-}
-main{
- flex:1;min-height:0;display:flex;flex-direction:column;
- padding:12px 14px 14px;max-width:1900px;width:100%;
- margin:0 auto;overflow:hidden
-}
-.intro{
- flex:0 0 auto;padding:12px 15px;margin-bottom:11px;
- background:linear-gradient(110deg,#132c40,#10202e);
- border:1px solid var(--line);border-radius:8px
-}
-.intro h2{font-size:14px;margin:0 0 5px}
-.intro p{font-size:10px;line-height:1.55;color:#b9cad8;margin:0}
-.grid{
- flex:1;min-height:0;display:grid;
- grid-template-columns:minmax(235px,275px) minmax(0,1fr) minmax(270px,330px);
- gap:11px;overflow:hidden
-}
-.panel{
- background:var(--panel);border:1px solid var(--line);
- border-radius:8px;min-width:0;min-height:0;
- overflow:hidden;display:flex;flex-direction:column
-}
-.panel-title{
- flex:0 0 auto;padding:12px 13px;border-bottom:1px solid var(--line);
- font-size:10px;font-weight:bold;letter-spacing:1px;color:var(--cyan)
-}
-.panel-body{
- flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
- padding:12px;scrollbar-width:thin;
- scrollbar-color:#36566d #0a1723
-}
-.panel-body::-webkit-scrollbar{width:7px}
-.panel-body::-webkit-scrollbar-thumb{background:#36566d;border-radius:8px}
-label{display:block;font-size:10px;color:var(--muted);margin:13px 0 5px}
-select,input[type=date],input[type=file]{
- width:100%;padding:9px;background:#0a1723;
- border:1px solid var(--line);color:var(--text);
- border-radius:5px;font-size:11px;min-width:0
-}
-input[type=range]{width:100%;accent-color:var(--cyan)}
-button{
- border:1px solid var(--line);background:#1b3448;
- color:white;padding:9px;border-radius:5px;
- cursor:pointer;font-size:10px;font-weight:bold
-}
-button:hover{border-color:var(--cyan)}
-.primary{background:#176176;border-color:#25879c}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px}
-.checkrow{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:10px;color:var(--muted)}
-.checkrow input{accent-color:var(--cyan)}
-.insight{
- padding:10px;background:#152b3a;border-left:3px solid var(--gold);
- margin:10px 0;border-radius:3px;font-size:10px;line-height:1.65;color:#d1dce5
-}
-.warning{
- padding:10px;background:#30281a;border:1px solid #69552c;
- color:#f3dba3;border-radius:6px;font-size:10px;line-height:1.6
-}
-#message{font-size:10px;color:var(--gold);margin-top:10px;line-height:1.5}
-.map-panel{position:relative}
-.map-toolbar{
- flex:0 0 auto;display:flex;align-items:center;
- flex-wrap:wrap;gap:8px;padding:9px 11px;
- border-bottom:1px solid var(--line);font-size:9px;color:var(--muted)
-}
-.map-toolbar strong{color:var(--cyan);font-weight:600}
-#map{flex:1;min-height:0;width:100%;background:#08111b}
-.map-foot{flex:0 0 auto;padding:8px 11px;font-size:9px;color:var(--muted);border-top:1px solid var(--line)}
-.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
-.kpi{background:#0b1926;border:1px solid var(--line);border-radius:7px;padding:10px;min-width:0}
-.kpi small{color:var(--muted);font-size:9px;display:block}
-.kpi strong{display:block;font-size:19px;margin-top:7px;color:var(--cyan);overflow-wrap:anywhere}
-.kpi em{font-size:9px;color:var(--muted);font-style:normal}
-.section{background:#0d1a27;border:1px solid var(--line);border-radius:7px;margin-top:10px;padding:11px}
-.section h3{font-size:10px;color:var(--cyan);margin:0 0 10px}
-.chart-wrap{height:190px;position:relative}
-table{width:100%;border-collapse:collapse;font-size:9px}
-th,td{padding:8px 6px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-th{color:var(--cyan);position:sticky;top:0;background:#0d1a27}
-td{color:#c8d5df}
-.small{font-size:9px;line-height:1.7;color:var(--muted)}
-.table-scroll{max-height:390px;overflow:auto}
-footer{
- margin-top:12px;padding:12px 5px;border-top:1px solid var(--line);
- color:var(--muted);font-size:9px;line-height:1.8;text-align:center
-}
-.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#102437;color:#eaf2f8}
-.leaflet-control-attribution{font-size:8px!important}
 @media(max-width:850px){
- html,body{height:auto;min-height:100%;overflow:auto}
- body{display:block}
- main{display:block;overflow:visible}
- .grid{display:flex;flex-direction:column;overflow:visible}
- .panel{min-height:300px}
- .panel-body{overflow:visible}
- .map-panel{height:520px;flex:none}
- #map{min-height:0}
+ body{overflow:auto}.app{height:auto;min-height:100vh}
+ .topbar{height:auto;min-height:65px;padding:12px}
+ .top-right{display:none}
+ .workspace{display:flex;flex-direction:column;min-height:0}
+ .side{min-height:430px}
+ .map-panel{height:62vh;min-height:420px;order:0}
+ .workspace>.side:first-child{order:1}
+ .workspace>.side:last-child{order:2}
+ .footer{height:auto;min-height:32px;gap:10px;flex-wrap:wrap;padding:8px}
 }
 </style>
 </head>
 
 <body>
-<header>
- <div class="brand">
-  <div class="logo">G</div>
-  <div>
-   <h1>GBoS GEOAI | SOCIOECONOMIC INTELLIGENCE</h1>
-   <div class="subtitle">THE GAMBIA • NIGHT-TIME LIGHTS • ADMINISTRATIVE GEOGRAPHY • SPATIAL ANALYTICS</div>
+<div class="app">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">G</div>
+    <div>
+      <h1>GBoS GEOAI | NIGHT-TIME LIGHTS INTELLIGENCE</h1>
+      <p>POPULATION • NIGHTLIGHTS • RADIANCE • SOCIOECONOMIC INDICATORS</p>
+    </div>
   </div>
- </div>
- <div class="status" id="connection">● INITIALISING SERVICES</div>
+  <div class="top-right">
+    <span><i class="live-dot"></i>INTERACTIVE GEOSPATIAL PLATFORM</span>
+    <span id="loading">INITIALISING...</span>
+  </div>
 </header>
 
-<main>
-<div class="intro">
- <h2>Socioeconomic and Night-Time Light Intelligence – The Gambia</h2>
- <p>
- Explore VIIRS night-time satellite imagery against GBoS administrative geography.
- Select a region, district, ward or enumeration area to focus the map.
- Satellite brightness is an illumination observation, not a direct measurement
- of income, poverty, GDP or household welfare.
- </p>
-</div>
+<main class="workspace">
 
-<div class="grid">
-
-<!-- LEFT PANEL -->
-<section class="panel">
- <div class="panel-title">01 / GEOGRAPHIC & DATA CONTROLS</div>
- <div class="panel-body">
-
-  <label>ADMINISTRATIVE REGION</label>
-  <select id="region"><option value="all">All The Gambia</option></select>
-
-  <label>ADMINISTRATIVE DISTRICT</label>
-  <select id="district"><option value="all">All districts</option></select>
-
-  <label>ADMINISTRATIVE WARD</label>
-  <select id="ward"><option value="all">All wards</option></select>
-
-  <label>ENUMERATION AREA</label>
-  <select id="ea"><option value="all">All enumeration areas</option></select>
-
-  <label>BOUNDARY LEVEL</label>
-  <select id="boundaryLevel">
-   <option value="region">Administrative regions</option>
-   <option value="district">Administrative districts</option>
-   <option value="ward">Administrative wards</option>
-   <option value="ea">Enumeration areas</option>
-  </select>
-
-  <label>VIIRS OBSERVATION DATE</label>
-  <input type="date" id="obsDate">
-  <div class="small" id="dateStatus">Checking NASA GIBS observation dates...</div>
-
-  <label>VIIRS SATELLITE PRODUCT</label>
-  <select id="satellite">
-   <option value="VIIRS_SNPP_DayNightBand_ENCC">VIIRS SNPP Day/Night Band – ENCC</option>
-  </select>
-
-  <label>NIGHTLIGHT OPACITY</label>
-  <input id="opacity" type="range" min="0" max="100" value="85">
-
-  <label>MAP BASEMAP</label>
-  <select id="basemap">
-   <option value="dark">Dark Cartographic</option>
-   <option value="street">OpenStreetMap</option>
-   <option value="satellite">Satellite Imagery</option>
-   <option value="terrain">Terrain</option>
-  </select>
-
-  <div class="checkrow">
-   <input type="checkbox" id="nightToggle" checked>
-   <label for="nightToggle" style="margin:0">Show VIIRS night-time imagery</label>
-  </div>
-  <div class="checkrow">
-   <input type="checkbox" id="boundaryToggle" checked>
-   <label for="boundaryToggle" style="margin:0">Show administrative boundaries</label>
+<!-- LEFT: CONTROLS -->
+<aside class="panel side">
+  <div class="panel-head">
+    <div class="eyebrow">01 / CONTROLS</div>
+    <h2>Geographic and satellite data configuration</h2>
   </div>
 
-  <label>UPLOAD ZONAL RADIANCE CSV</label>
-  <input type="file" id="csvFile" accept=".csv">
+  <div class="panel-body">
 
-  <div class="insight">
-   <b>CSV field guidance</b><br>
-   Recommended columns: region, district, ward, feacode or ea_code,
-   area or settlement, mean_radiance, max_radiance and lit_pixels.
-   At minimum, provide an area name and mean radiance.
+    <section class="section">
+      <h3 class="section-title">ADMINISTRATIVE SELECTION</h3>
+
+      <label for="regionSelect">Region</label>
+      <select id="regionSelect"><option value="">All regions</option></select>
+
+      <label for="districtSelect">District / LGA</label>
+      <select id="districtSelect"><option value="">All districts</option></select>
+
+      <label for="wardSelect">Ward</label>
+      <select id="wardSelect"><option value="">All wards</option></select>
+
+      <label for="eaSelect">Enumeration area</label>
+      <select id="eaSelect"><option value="">All enumeration areas</option></select>
+
+      <label for="boundaryLevel">Map boundary level</label>
+      <select id="boundaryLevel">
+        <option value="region">Region</option>
+        <option value="district">District / LGA</option>
+        <option value="ward">Ward</option>
+        <option value="ea" selected>Enumeration area</option>
+      </select>
+
+      <div class="btn-row">
+        <button class="btn primary" id="applyGeo">APPLY AREA</button>
+        <button class="btn" id="resetBtn">RESET</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">VIIRS SATELLITE PRODUCT</h3>
+
+      <label for="viirsProduct">Night-time lights imagery layer</label>
+      <select id="viirsProduct">
+        <option value="VIIRS_SNPP_DayNightBand_ENCC">VIIRS SNPP Day/Night Band – ENCC</option>
+        <option value="VIIRS_NOAA20_DayNightBand_ENCC">VIIRS NOAA-20 Day/Night Band – ENCC</option>
+        <option value="VIIRS_SNPP_DayNightBand_At_Sensor_Radiance">VIIRS SNPP At-Sensor Radiance</option>
+        <option value="VIIRS_NOAA20_DayNightBand_At_Sensor_Radiance">VIIRS NOAA-20 At-Sensor Radiance</option>
+        <option value="VIIRS_SNPP_CorrectedReflectance_TrueColor">VIIRS SNPP Corrected Reflectance – True Color</option>
+      </select>
+
+      <label for="viirsDate">VIIRS observation date</label>
+      <input type="date" id="viirsDate" value="2023-07-07">
+
+      <label for="nightOpacity">Nightlight opacity <span id="opacityText">85%</span></label>
+      <input type="range" id="nightOpacity" min="0" max="100" value="85">
+
+      <div class="btn-row">
+        <button class="btn primary" id="applyNight">LOAD IMAGERY</button>
+        <button class="btn" id="removeNight">REMOVE LAYER</button>
+      </div>
+
+      <div id="gibsStatus" class="status">Checking NASA GIBS layer catalogue...</div>
+      <p class="small-note">
+        The available layers and dates depend on NASA GIBS service coverage.
+        An unavailable layer or date will be reported; no radiance value is inferred from missing tiles.
+      </p>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">MAP BASEMAP</h3>
+      <label for="basemapSelect">Select basemap</label>
+      <select id="basemapSelect">
+        <option value="dark">Dark Cartographic</option>
+        <option value="osm">OpenStreetMap</option>
+        <option value="satellite">Satellite Imagery</option>
+        <option value="terrain">Terrain</option>
+      </select>
+      <label>
+        <input type="checkbox" id="showBoundaries" checked>
+        Show administrative boundaries
+      </label>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">RADIANCE STATISTICS INPUT</h3>
+      <label for="csvFile">Upload radiance statistics CSV</label>
+      <input type="file" id="csvFile" accept=".csv,text/csv">
+
+      <div id="csvStatus" class="status">
+        No radiance CSV loaded. Upload a zonal statistics CSV to populate the table.
+      </div>
+
+      <p class="small-note">
+        Recommended columns: region, district, ward, feacode or EA code,
+        settlement, mean_radiance, max_radiance, lit_pixels and pixel_count.
+        Column names are matched flexibly.
+      </p>
+
+      <div class="btn-row">
+        <button class="btn" id="downloadStats">EXPORT STATISTICS</button>
+        <button class="btn" id="downloadGeo">EXPORT EA GEOJSON</button>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">DATA SOURCES</h3>
+      <div class="small-note">
+        <b>Administrative geography</b><br>
+        GBoS Census Enumeration Areas GeoJSON<br><br>
+        <b>Satellite imagery</b><br>
+        NASA Global Imagery Browse Services (GIBS)<br><br>
+        <b>Radiance statistics</b><br>
+        User-supplied zonal statistics CSV
+      </div>
+    </section>
   </div>
+</aside>
 
-  <div class="actions">
-   <button class="primary" id="applyBtn">APPLY SELECTION</button>
-   <button id="resetBtn">RESET</button>
-   <button id="csvBtn">EXPORT CSV</button>
-   <button id="geoBtn">EXPORT GEOJSON</button>
-  </div>
-
-  <div id="message">Waiting for administrative boundaries.</div>
-
-  <div class="section">
-   <h3>DATA SOURCES</h3>
-   <div class="small">
-    • GBoS Census EA GeoJSON<br>
-    • NASA GIBS / NOAA VIIRS<br>
-    • Uploaded VIIRS zonal statistics
-   </div>
-  </div>
- </div>
-</section>
-
-<!-- CENTRE PANEL -->
+<!-- CENTRE: MAP -->
 <section class="panel map-panel">
- <div class="panel-title">02 / INTERACTIVE MAP</div>
- <div class="map-toolbar">
-  <strong>THE GAMBIA</strong>
-  <span id="mapDate">VIIRS: --</span>
-  <span id="mapArea">NATIONAL EXTENT</span>
- </div>
- <div id="map"></div>
- <div class="map-foot">
-  NASA GIBS • VIIRS Day/Night Band ENCC • Daily display imagery.
-  Tile imagery is not used to calculate the statistics in the table.
- </div>
+  <div id="map"></div>
+  <div class="map-tag">THE GAMBIA / NIGHT-TIME LIGHTS / GEOAI</div>
+  <div class="map-legend">
+    <div><span class="swatch" style="background:#55d6e8"></span>Selected geography</div>
+    <div><span class="swatch" style="background:#f6ad55"></span>Administrative boundary</div>
+    <div><span class="swatch" style="background:#8fa2ba"></span>EA boundaries</div>
+  </div>
 </section>
 
-<!-- RIGHT PANEL -->
-<section class="panel">
- <div class="panel-title">03 / SPATIAL ANALYTICS</div>
- <div class="panel-body">
-
-  <div class="small">SELECTED GEOGRAPHY</div>
-  <div id="selectedArea" style="font-size:16px;font-weight:bold;margin:6px 0">The Gambia</div>
-
-  <div class="kpis">
-   <div class="kpi">
-    <small>VISIBLE ADMIN UNITS</small>
-    <strong id="kpiAreas">--</strong>
-    <em>Current boundary level</em>
-   </div>
-   <div class="kpi">
-    <small>SELECTED EAs</small>
-    <strong id="kpiEA">--</strong>
-    <em>Filtered EA features</em>
-   </div>
-   <div class="kpi">
-    <small>MEAN RADIANCE</small>
-    <strong id="kpiRadiance">N/A</strong>
-    <em>Valid uploaded observations</em>
-   </div>
-   <div class="kpi">
-    <small>AREA GROUPS</small>
-    <strong id="kpiRecords">0</strong>
-    <em>Unique aggregated areas</em>
-   </div>
+<!-- RIGHT: ANALYTICS -->
+<aside class="panel side">
+  <div class="panel-head">
+    <div class="eyebrow">02 / ANALYTICS</div>
+    <h2>Night-time radiance and geographic statistics</h2>
   </div>
 
-  <div class="section">
-   <h3>04 / ADMINISTRATIVE RADIANCE STATISTICS</h3>
-   <div class="small" id="statsSummary">
-    Waiting for a zonal radiance CSV.
-   </div>
-   <div class="table-scroll">
-    <table>
-     <thead>
-      <tr>
-       <th>Area</th>
-       <th>Mean</th>
-       <th>Maximum</th>
-       <th>Lit pixels</th>
-      </tr>
-     </thead>
-     <tbody id="statsTable">
-      <tr><td colspan="4">No zonal radiance data uploaded.</td></tr>
-     </tbody>
-    </table>
-   </div>
+  <div class="panel-body">
+
+    <section class="section">
+      <h3 class="section-title">NATIONAL / SELECTED AREA INDICATORS</h3>
+      <div class="kpis">
+        <div class="kpi">
+          <div class="klabel">GEOGRAPHIC FEATURES</div>
+          <div class="value" id="kpiEA">—</div>
+          <div class="unit">Features in selected area</div>
+        </div>
+        <div class="kpi">
+          <div class="klabel">UNIQUE AREA GROUPS</div>
+          <div class="value" id="kpiGroups">0</div>
+          <div class="unit">Aggregated CSV groups</div>
+        </div>
+        <div class="kpi">
+          <div class="klabel">VALID MEAN RADIANCE</div>
+          <div class="value" id="kpiMean">N/A</div>
+          <div class="unit">Mean of available group means</div>
+        </div>
+        <div class="kpi">
+          <div class="klabel">LIT PIXELS</div>
+          <div class="value" id="kpiLit">N/A</div>
+          <div class="unit">Sum of reported lit pixels</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">04 / ADMINISTRATIVE RADIANCE STATISTICS</h3>
+      <div id="radianceSummary" class="small-note">
+        No radiance statistics loaded.
+      </div>
+      <div class="table-wrap" style="margin-top:10px">
+        <table>
+          <thead>
+            <tr>
+              <th>Area</th>
+              <th>Mean</th>
+              <th>Maximum</th>
+              <th>Lit pixels</th>
+            </tr>
+          </thead>
+          <tbody id="radianceTable">
+            <tr><td colspan="4">Upload a radiance CSV to begin.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="matchStatus" class="status">
+        Waiting for radiance statistics data.
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">RADIANCE COMPARISON</h3>
+      <div class="chart-box">
+        <canvas id="radianceChart"></canvas>
+      </div>
+      <p class="small-note">
+        The chart displays uploaded radiance statistics only. It is not calculated
+        from the background satellite imagery.
+      </p>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">DATA QUALITY AND INTERPRETATION</h3>
+      <div id="qualityStatus" class="status">
+        No CSV has been evaluated.
+      </div>
+      <div class="small-note" id="methodText">
+        Duplicate source rows are aggregated by administrative identifiers.
+        Missing numeric observations remain missing and are not converted to zero.
+      </div>
+    </section>
+
+    <section class="section">
+      <h3 class="section-title">METHODOLOGY</h3>
+      <div class="small-note">
+        1. Load GBoS enumeration area boundaries.<br>
+        2. Select an administrative geography.<br>
+        3. Display NASA GIBS satellite imagery for the selected date, if available.<br>
+        4. Upload zonal radiance statistics in CSV format.<br>
+        5. Normalise geographic identifiers and aggregate repeated records.<br>
+        6. Calculate descriptive summaries from valid uploaded values.<br>
+        7. Export the resulting statistics and geographic features.
+      </div>
+    </section>
   </div>
+</aside>
 
-  <div class="section">
-   <h3>05 / AREA-LEVEL RADIANCE COMPARISON</h3>
-   <div class="chart-wrap"><canvas id="radianceChart"></canvas></div>
-   <div id="chartMessage" class="small">
-    Upload valid zonal radiance statistics to generate the comparison.
-   </div>
-  </div>
-
-  <div class="section">
-   <h3>06 / SOCIOECONOMIC INTERPRETATION</h3>
-   <div class="insight">
-    <b>Greater Banjul Area</b><br>
-    Examine illumination patterns alongside settlement density,
-    commercial activity, transport infrastructure and electricity access.
-   </div>
-   <div class="insight">
-    <b>Urban and peri-urban settlements</b><br>
-    Compare the spatial distribution of persistent illumination
-    around established urban areas and developing settlement corridors.
-   </div>
-   <div class="insight">
-    <b>Rural Gambia</b><br>
-    Lower observed illumination may reflect dispersed settlements,
-    agricultural land, lighting behaviour or electricity availability.
-   </div>
-   <div class="insight">
-    <b>Population and brightness</b><br>
-    Compare population density with independently calculated radiance.
-    Low radiance should prompt further investigation, not an automatic
-    classification of deprivation.
-   </div>
-   <div class="warning">
-    <b>Remote-sensing caution</b><br>
-    A dark area is not necessarily poor, and a bright area is not
-    necessarily wealthy. Industrial facilities, fishing activity,
-    gas flaring, cloud, atmospheric conditions and lighting practices
-    can influence satellite observations.
-   </div>
-  </div>
-
-  <div class="section">
-   <h3>07 / DATA QUALITY & SERVICE STATUS</h3>
-   <div id="dataStatus" class="small">
-    Boundaries: Loading<br>
-    VIIRS: Initialising<br>
-    Radiance statistics: Not uploaded
-   </div>
-  </div>
-
-  <footer>
-   <b>GBoS GEOAI | SOCIOECONOMIC INTELLIGENCE</b><br>
-   Produced by Ansu Singhateh | GIS Analyst | GIS / Cartography Unit |
-   Gambia Bureau of Statistics<br>
-   GBoS GEOAI • Research and educational use<br>
-   Sources: GBoS Census geography • NASA GIBS / NOAA VIIRS
-  </footer>
- </div>
-</section>
-
-</div>
 </main>
 
+<footer class="footer">
+  <span>Produced by Ansu Singhateh | GIS Analyst | GIS / Cartography Unit | Gambia Bureau of Statistics</span>
+  <span>GBoS GEOAI • Research and educational use</span>
+</footer>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.2.0/turf.min.js"></script>
+
 <script>
-// ============================================================
-// 1. CONFIGURATION
-// ============================================================
+"use strict";
 
-const CONFIG={
- boundaryURL:
- "https://raw.githubusercontent.com/silkysingz94-oss/Socioeconomic-Intelligence/main/Census_EAs_Geo.json",
- gibsCapabilities:
- "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/1.0.0/WMTSCapabilities.xml",
- gibsBase:
- "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/",
- viirsLayer:"VIIRS_SNPP_DayNightBand_ENCC",
- center:[13.45,-15.45],
- nationalBounds:[[13.0,-16.9],[13.9,-13.7]]
+/* =========================================================
+   1. CONFIGURATION
+========================================================= */
+
+const GEOJSON_URL =
+ "https://raw.githubusercontent.com/silkysingz94-oss/Socioeconomic-Intelligence/main/Census_EAs_Geo.json";
+
+const GIBS_BASE =
+ "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best";
+
+const GIBS_CAPABILITIES =
+ "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/wmts.cgi?SERVICE=WMTS&REQUEST=GetCapabilities";
+
+const $ = id => document.getElementById(id);
+
+let allFeatures = [];
+let selectedFeatures = [];
+let radianceSourceRows = [];
+let aggregatedRows = [];
+let chart = null;
+let boundaryLayer = null;
+let selectedLayer = null;
+let nightLayer = null;
+let currentBasemap = null;
+let availableGibsLayers = new Map();
+let gibsCapabilitiesLoaded = false;
+let csvDiagnostics = {
+  total:0, validMean:0, unmatched:0, invalid:0,
+  noArea:0, matched:0, filtered:0
 };
 
-let eaGeoJSON=null;
-let filteredEAs=[];
-let displayFeatures=[];
-let boundaryLayer=null;
-let viirsLayer=null;
-let baseLayer=null;
-let radianceRows=[];
-let aggregatedRadiance=[];
-let radianceChart=null;
-let dateAvailability=null;
+const map = L.map("map", {
+  zoomControl:true,
+  preferCanvas:true
+}).setView([13.45,-15.45], 8);
 
-// ============================================================
-// 2. MAP
-// ============================================================
-
-const map=L.map("map",{
- zoomControl:true,
- preferCanvas:true,
- minZoom:6,
- maxZoom:17
-}).setView(CONFIG.center,8);
-
-const basemaps={
- dark:L.tileLayer(
-  "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-  {attribution:"© CARTO © OpenStreetMap"}
- ),
- street:L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  {attribution:"© OpenStreetMap"}
- ),
- satellite:L.tileLayer(
-  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-  {attribution:"© Esri"}
- ),
- terrain:L.tileLayer(
-  "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-  {attribution:"© OpenTopoMap"}
- )
+const basemaps = {
+  dark:L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    {subdomains:"abcd",maxZoom:20,attribution:"© CARTO"}
+  ),
+  osm:L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {maxZoom:19,attribution:"© OpenStreetMap"}
+  ),
+  satellite:L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {maxZoom:19,attribution:"© Esri"}
+  ),
+  terrain:L.tileLayer(
+    "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+    {maxZoom:17,attribution:"© OpenTopoMap"}
+  )
 };
 
-function setBasemap(){
- if(baseLayer)map.removeLayer(baseLayer);
- baseLayer=basemaps[document.getElementById("basemap").value];
- baseLayer.addTo(map);
- if(viirsLayer && map.hasLayer(viirsLayer))viirsLayer.bringToFront();
- if(boundaryLayer && map.hasLayer(boundaryLayer))boundaryLayer.bringToFront();
+function setBasemap(name) {
+  if (currentBasemap) map.removeLayer(currentBasemap);
+  currentBasemap = basemaps[name] || basemaps.dark;
+  currentBasemap.addTo(map);
+  currentBasemap.bringToBack();
 }
-document.getElementById("basemap").addEventListener("change",setBasemap);
-setBasemap();
+setBasemap("dark");
 
-// ============================================================
-// 3. GENERAL HELPERS
-// ============================================================
 
-function setMessage(message){
- document.getElementById("message").textContent=message;
-}
+/* =========================================================
+   2. PROPERTY AND TEXT HELPERS
+========================================================= */
 
-function escapeHTML(value){
- return String(value??"").replace(/[&<>"']/g,c=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
- }[c]));
+function cleanText(value) {
+  return String(value ?? "").trim();
 }
 
-function clean(value){
- if(value===null || value===undefined)return "";
- return String(value).trim();
+function normalise(value) {
+  return cleanText(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/&/g,"and")
+    .replace(/[^a-z0-9]/g,"");
 }
 
-function uniqueSorted(values){
- return [...new Set(values.map(clean).filter(Boolean))]
-  .sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-}
+function getProp(properties, aliases) {
+  if (!properties) return null;
 
-function propertyValue(properties,candidates){
- for(const key of candidates){
-  if(properties[key]!==undefined && properties[key]!==null &&
-     clean(properties[key])!==""){
-   return clean(properties[key]);
-  }
- }
- return "";
-}
-
-function getRegion(p){
- return propertyValue(p,[
-  "RCO","rco","region","Region","regionname","region_name",
-  "RCO_NAME","rconame","admin1Name","ADM1_NAME"
- ]);
-}
-
-function getDistrict(p){
- return propertyValue(p,[
-  "distname","DISTNAME","district","District","districtname",
-  "district_name","lganame","LGA","admin2Name","ADM2_NAME"
- ]);
-}
-
-function getWard(p){
- return propertyValue(p,[
-  "wardname","WARDNAME","ward","Ward","ward_name","admin3Name"
- ]);
-}
-
-function getEA(p){
- return propertyValue(p,[
-  "feacode","FEACODE","ea_code","EA_CODE","eaname","EA",
-  "ea","enumeration_area","OBJECTID"
- ]);
-}
-
-function getAreaName(feature,level){
- const p=feature.properties||{};
- if(level==="region")return getRegion(p)||"Unnamed region";
- if(level==="district")return getDistrict(p)||"Unnamed district";
- if(level==="ward")return getWard(p)||"Unnamed ward";
- return getEA(p)||"Unnamed EA";
-}
-
-function selectedValues(){
- return {
-  region:document.getElementById("region").value,
-  district:document.getElementById("district").value,
-  ward:document.getElementById("ward").value,
-  ea:document.getElementById("ea").value,
-  level:document.getElementById("boundaryLevel").value
- };
-}
-
-// ============================================================
-// 4. LOAD GBoS CENSUS GEOJSON
-// ============================================================
-
-async function loadAdministrativeData(){
- setMessage("Loading GBoS Census EA GeoJSON...");
-
- try{
-  const response=await fetch(CONFIG.boundaryURL,{cache:"no-store"});
-  if(!response.ok)throw new Error("HTTP "+response.status);
-
-  const data=await response.json();
-
-  if(data.type!=="FeatureCollection" || !Array.isArray(data.features)){
-   throw new Error("The source is not a valid GeoJSON FeatureCollection.");
-  }
-
-  eaGeoJSON=data;
-  filteredEAs=data.features.filter(f=>f.geometry && f.properties);
-
-  if(!filteredEAs.length)throw new Error("No usable EA features were found.");
-
-  populateGeographySelectors();
-  updateSelection();
-
-  document.getElementById("connection").textContent="● GBoS GEOGRAPHY LOADED";
-  document.getElementById("dataStatus").innerHTML=
-   "GBoS EA boundaries: Loaded ("+filteredEAs.length.toLocaleString()+")"+
-   "<br>Geographic selectors: Ready"+
-   "<br>VIIRS: Checking observation dates"+
-   "<br>Radiance statistics: Awaiting zonal CSV";
-
-  setMessage("GBoS Census EA GeoJSON loaded successfully.");
-
- }catch(error){
-  console.error(error);
-  document.getElementById("connection").textContent="● BOUNDARY ERROR";
-  setMessage("Could not load Census_EAs_Geo.json: "+error.message);
- }
-}
-
-// ============================================================
-// 5. GEOGRAPHIC SELECTORS
-// ============================================================
-
-function setOptions(select,values,defaultLabel){
- const oldValue=select.value;
- select.innerHTML="";
- select.add(new Option(defaultLabel,"all"));
- values.forEach(value=>select.add(new Option(value,value)));
- if(values.includes(oldValue))select.value=oldValue;
- else select.value="all";
-}
-
-function populateGeographySelectors(){
- const regions=uniqueSorted(filteredEAs.map(f=>getRegion(f.properties||{})));
- setOptions(document.getElementById("region"),regions,"All The Gambia");
- populateDistrictSelector();
- populateWardSelector();
- populateEASelector();
-}
-
-function regionFilteredFeatures(){
- const region=document.getElementById("region").value;
- return region==="all"?filteredEAs:
-  filteredEAs.filter(f=>getRegion(f.properties||{})===region);
-}
-
-function districtFilteredFeatures(){
- const features=regionFilteredFeatures();
- const district=document.getElementById("district").value;
- return district==="all"?features:
-  features.filter(f=>getDistrict(f.properties||{})===district);
-}
-
-function wardFilteredFeatures(){
- const features=districtFilteredFeatures();
- const ward=document.getElementById("ward").value;
- return ward==="all"?features:
-  features.filter(f=>getWard(f.properties||{})===ward);
-}
-
-function populateDistrictSelector(){
- setOptions(
-  document.getElementById("district"),
-  uniqueSorted(regionFilteredFeatures().map(f=>getDistrict(f.properties||{}))),
-  "All districts"
- );
-}
-
-function populateWardSelector(){
- setOptions(
-  document.getElementById("ward"),
-  uniqueSorted(districtFilteredFeatures().map(f=>getWard(f.properties||{}))),
-  "All wards"
- );
-}
-
-function populateEASelector(){
- setOptions(
-  document.getElementById("ea"),
-  uniqueSorted(wardFilteredFeatures().map(f=>getEA(f.properties||{}))),
-  "All enumeration areas"
- );
-}
-
-document.getElementById("region").addEventListener("change",()=>{
- document.getElementById("district").value="all";
- document.getElementById("ward").value="all";
- document.getElementById("ea").value="all";
- populateDistrictSelector();
- populateWardSelector();
- populateEASelector();
- updateSelection();
-});
-
-document.getElementById("district").addEventListener("change",()=>{
- document.getElementById("ward").value="all";
- document.getElementById("ea").value="all";
- populateWardSelector();
- populateEASelector();
- updateSelection();
-});
-
-document.getElementById("ward").addEventListener("change",()=>{
- document.getElementById("ea").value="all";
- populateEASelector();
- updateSelection();
-});
-
-document.getElementById("ea").addEventListener("change",updateSelection);
-document.getElementById("boundaryLevel").addEventListener("change",updateSelection);
-
-// ============================================================
-// 6. FILTER EA FEATURES
-// ============================================================
-
-function getFilteredEAs(){
- const s=selectedValues();
-
- return filteredEAs.filter(feature=>{
-  const p=feature.properties||{};
-  if(s.region!=="all" && getRegion(p)!==s.region)return false;
-  if(s.district!=="all" && getDistrict(p)!==s.district)return false;
-  if(s.ward!=="all" && getWard(p)!==s.ward)return false;
-  if(s.ea!=="all" && getEA(p)!==s.ea)return false;
-  return true;
- });
-}
-
-// ============================================================
-// 7. DISSOLVE EA FEATURES FOR DISPLAY AT HIGHER LEVELS
-// ============================================================
-
-function makeDisplayFeatures(features,level){
- if(level==="ea")return features;
-
- const getters={
-  region:getRegion,
-  district:getDistrict,
-  ward:getWard
- };
- const getter=getters[level];
- if(!getter)return features;
-
- try{
-  const collection={
-   type:"FeatureCollection",
-   features:features.map((feature,index)=>({
-    type:"Feature",
-    geometry:feature.geometry,
-    properties:{
-     __display_group:getter(feature.properties||{})||"Unknown",
-     __unique:index
+  const keys = Object.keys(properties);
+  for (const alias of aliases) {
+    const found = keys.find(k => k.toLowerCase() === alias.toLowerCase());
+    if (found !== undefined) {
+      const value = properties[found];
+      if (value !== null && value !== undefined &&
+          String(value).trim() !== "") return value;
     }
-   }))
-  };
+  }
+  return null;
+}
 
-  const dissolved=turf.dissolve(collection,{propertyName:"__display_group"});
-  dissolved.features.forEach(feature=>{
-   feature.properties={
-    display_name:feature.properties.__display_group,
-    display_level:level
-   };
+function parseNumber(value) {
+  if (value === null || value === undefined ||
+      String(value).trim() === "") return null;
+
+  const cleaned = String(value).replace(/,/g,"").trim();
+  const number = Number(cleaned);
+  return Number.isFinite(number) ? number : null;
+}
+
+function formatNumber(value, digits=3) {
+  if (value === null || value === undefined ||
+      !Number.isFinite(Number(value))) return "N/A";
+
+  return Number(value).toLocaleString(undefined,{
+    maximumFractionDigits:digits
   });
-  return dissolved.features;
- }catch(error){
-  console.warn("Dissolve failed; displaying source features.",error);
-  return features;
- }
 }
 
-// ============================================================
-// 8. DRAW SELECTED BOUNDARIES
-// ============================================================
+function getRegion(p) {
+  return cleanText(getProp(p,["RCO","region","region_name","rco_name"]));
+}
+function getDistrict(p) {
+  return cleanText(getProp(p,["lganame","distname","district","lga","district_name"]));
+}
+function getWard(p) {
+  return cleanText(getProp(p,["wardname","ward","ward_name"]));
+}
+function getEA(p) {
+  return cleanText(getProp(p,["feacode","EA_CODE","ea_code","eaname","ea_name","enumeration_area"]));
+}
+function getEAName(p) {
+  return cleanText(getProp(p,["eaname","ea_name","settlement","settlement_name","feacode"]));
+}
 
-function drawSelectedBoundaries(){
- if(!eaGeoJSON)return;
+function uniqueSorted(values) {
+  return [...new Set(values.filter(v => v && v.trim()))]
+    .sort((a,b)=>a.localeCompare(b));
+}
 
- const s=selectedValues();
- const selectedEAs=getFilteredEAs();
- const display=makeDisplayFeatures(selectedEAs,s.level);
- displayFeatures=display;
+function fillSelect(select, values, placeholder) {
+  const previous = select.value;
+  select.innerHTML = "";
+  const first = document.createElement("option");
+  first.value = "";
+  first.textContent = placeholder;
+  select.appendChild(first);
 
- if(boundaryLayer)map.removeLayer(boundaryLayer);
+  values.forEach(value=>{
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    select.appendChild(option);
+  });
 
- boundaryLayer=L.geoJSON({
-  type:"FeatureCollection",
-  features:display
- },{
-  style:{
-   color:"#40c4d8",
-   weight:s.level==="ea"?.65:1.7,
-   opacity:.95,
-   fillColor:"#40c4d8",
-   fillOpacity:s.level==="ea"?.015:.045
-  },
-  onEachFeature:(feature,layer)=>{
-   const name=feature.properties?.display_name||getAreaName(feature,s.level);
-   layer.bindPopup(
-    "<b>"+escapeHTML(name)+"</b><br>"+
-    "Boundary level: "+escapeHTML(s.level.toUpperCase())
-   );
-   layer.on("mouseover",function(){
-    this.setStyle({weight:3,fillOpacity:.15});
-   });
-   layer.on("mouseout",function(){
-    boundaryLayer.resetStyle(this);
-   });
+  if (values.includes(previous)) select.value = previous;
+}
+
+
+/* =========================================================
+   3. LOAD GBoS ADMINISTRATIVE GEOGRAPHY
+========================================================= */
+
+async function loadBoundaries() {
+  $("loading").textContent = "LOADING GBoS GEOGRAPHY...";
+
+  try {
+    const response = await fetch(GEOJSON_URL,{cache:"no-store"});
+    if (!response.ok) throw new Error("GitHub GeoJSON HTTP " + response.status);
+
+    const geojson = await response.json();
+    if (!geojson.features || !Array.isArray(geojson.features)) {
+      throw new Error("The GeoJSON has no valid features array.");
+    }
+
+    allFeatures = geojson.features.filter(f=>f && f.geometry && f.properties);
+    selectedFeatures = [...allFeatures];
+
+    populateAdministrativeSelectors();
+    updateGeography();
+    $("loading").textContent = "GBoS GEOGRAPHY LOADED";
+    $("loading").style.color = "var(--green)";
+  } catch (error) {
+    console.error(error);
+    $("loading").textContent = "BOUNDARY SERVICE UNAVAILABLE";
+    $("loading").style.color = "var(--red)";
+    alert("Unable to load Census_EAs_Geo.json. Check the GitHub URL and repository access.");
   }
- });
+}
 
- if(document.getElementById("boundaryToggle").checked){
-  boundaryLayer.addTo(map);
- }
+function populateAdministrativeSelectors() {
+  fillSelect($("regionSelect"),
+    uniqueSorted(allFeatures.map(f=>getRegion(f.properties))),
+    "All regions");
+  updateDistrictOptions();
+}
 
- if(display.length && document.getElementById("boundaryToggle").checked){
-  const bounds=boundaryLayer.getBounds();
-  if(bounds.isValid()){
-   map.fitBounds(bounds,{padding:[18,18],maxZoom:s.level==="ea"?15:11});
+function updateDistrictOptions() {
+  const region = $("regionSelect").value;
+  const subset = allFeatures.filter(f=>
+    !region || getRegion(f.properties)===region
+  );
+
+  fillSelect($("districtSelect"),
+    uniqueSorted(subset.map(f=>getDistrict(f.properties))),
+    "All districts");
+  updateWardOptions();
+}
+
+function updateWardOptions() {
+  const region = $("regionSelect").value;
+  const district = $("districtSelect").value;
+
+  const subset = allFeatures.filter(f=>
+    (!region || getRegion(f.properties)===region) &&
+    (!district || getDistrict(f.properties)===district)
+  );
+
+  fillSelect($("wardSelect"),
+    uniqueSorted(subset.map(f=>getWard(f.properties))),
+    "All wards");
+  updateEAOptions();
+}
+
+function updateEAOptions() {
+  const region = $("regionSelect").value;
+  const district = $("districtSelect").value;
+  const ward = $("wardSelect").value;
+
+  const subset = allFeatures.filter(f=>
+    (!region || getRegion(f.properties)===region) &&
+    (!district || getDistrict(f.properties)===district) &&
+    (!ward || getWard(f.properties)===ward)
+  );
+
+  const options = uniqueSorted(subset.map(f=>getEA(f.properties)));
+  fillSelect($("eaSelect"),options,"All enumeration areas");
+}
+
+$("regionSelect").addEventListener("change",()=>{
+  updateDistrictOptions();
+  updateGeography();
+});
+$("districtSelect").addEventListener("change",()=>{
+  updateWardOptions();
+  updateGeography();
+});
+$("wardSelect").addEventListener("change",()=>{
+  updateEAOptions();
+  updateGeography();
+});
+$("eaSelect").addEventListener("change",updateGeography);
+$("boundaryLevel").addEventListener("change",updateGeography);
+$("applyGeo").addEventListener("click",updateGeography);
+
+function getGeographicSubset() {
+  const region = $("regionSelect").value;
+  const district = $("districtSelect").value;
+  const ward = $("wardSelect").value;
+  const ea = $("eaSelect").value;
+
+  return allFeatures.filter(f=>{
+    const p=f.properties;
+    return (!region || getRegion(p)===region) &&
+      (!district || getDistrict(p)===district) &&
+      (!ward || getWard(p)===ward) &&
+      (!ea || getEA(p)===ea);
+  });
+}
+
+function makeBoundaryStyle(feature) {
+  return {
+    color:"#f6ad55",
+    weight:0.65,
+    opacity:0.7,
+    fillColor:"#55d6e8",
+    fillOpacity:0.025
+  };
+}
+
+function updateGeography() {
+  if (!allFeatures.length) return;
+
+  selectedFeatures = getGeographicSubset();
+
+  if (boundaryLayer) map.removeLayer(boundaryLayer);
+  if (selectedLayer) map.removeLayer(selectedLayer);
+
+  const show = $("showBoundaries").checked;
+  const level = $("boundaryLevel").value;
+
+  if (show) {
+    boundaryLayer = L.geoJSON(allFeatures,{
+      style:makeBoundaryStyle,
+      interactive:false
+    }).addTo(map);
   }
- }else if(!selectedEAs.length){
-  map.fitBounds(CONFIG.nationalBounds);
- }
 
- return {selectedEAs,display};
+  if (selectedFeatures.length) {
+    selectedLayer = L.geoJSON(selectedFeatures,{
+      style:{
+        color:"#55d6e8",
+        weight:1.6,
+        opacity:1,
+        fillColor:"#55d6e8",
+        fillOpacity:0.08
+      },
+      onEachFeature:(feature,layer)=>{
+        const p=feature.properties;
+        layer.bindPopup(`
+          <b>${getEAName(p)}</b><br>
+          Region: ${getRegion(p)||"N/A"}<br>
+          District: ${getDistrict(p)||"N/A"}<br>
+          Ward: ${getWard(p)||"N/A"}<br>
+          EA code: ${getEA(p)||"N/A"}
+        `);
+      }
+    }).addTo(map);
+
+    try {
+      const bounds=selectedLayer.getBounds();
+      if (bounds.isValid()) map.fitBounds(bounds,{padding:[20,20],maxZoom:13});
+    } catch(e) {
+      console.warn("Unable to zoom to selected geography",e);
+    }
+  }
+
+  $("kpiEA").textContent=selectedFeatures.length.toLocaleString();
+  updateRadianceDisplay();
 }
 
-// ============================================================
-// 9. UPDATE SELECTED GEOGRAPHY
-// ============================================================
+$("showBoundaries").addEventListener("change",updateGeography);
+$("basemapSelect").addEventListener("change",e=>setBasemap(e.target.value));
 
-function updateSelection(){
- if(!eaGeoJSON)return;
 
- const result=drawSelectedBoundaries();
- const s=selectedValues();
+/* =========================================================
+   4. NASA GIBS LAYER DISCOVERY
+   The capabilities document is queried instead of assuming
+   that every proposed layer ID is supported.
+========================================================= */
 
- const selectedName=
-  s.ea!=="all"?s.ea:
-  s.ward!=="all"?s.ward:
-  s.district!=="all"?s.district:
-  s.region!=="all"?s.region:"The Gambia";
+function findLayerIdentifiers(xmlText) {
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(xmlText,"application/xml");
 
- document.getElementById("selectedArea").textContent=selectedName;
- document.getElementById("mapArea").textContent=selectedName.toUpperCase();
- document.getElementById("kpiAreas").textContent=result.display.length.toLocaleString();
- document.getElementById("kpiEA").textContent=result.selectedEAs.length.toLocaleString();
+  if (xml.querySelector("parsererror")) {
+    throw new Error("Could not parse NASA GIBS capabilities XML.");
+  }
 
- updateRadianceSummary();
- setMessage("Geographic selection updated: "+selectedName);
+  const result=[];
+  xml.querySelectorAll("Layer").forEach(layer=>{
+    const identifier=layer.querySelector("Identifier");
+    const title=layer.querySelector("Title");
+    if (!identifier) return;
+
+    const id=identifier.textContent.trim();
+    const label=title ? title.textContent.trim() : id;
+
+    if (/VIIRS/i.test(id) &&
+        /(DayNightBand|Night|BlackMarble|DNB)/i.test(id)) {
+      result.push({id,label});
+    }
+  });
+  return result;
 }
 
-document.getElementById("applyBtn").addEventListener("click",updateSelection);
+async function loadGibsCatalogue() {
+  try {
+    const response=await fetch(GIBS_CAPABILITIES);
+    if (!response.ok) throw new Error("GIBS capabilities HTTP "+response.status);
 
-document.getElementById("boundaryToggle").addEventListener("change",e=>{
- if(!boundaryLayer)return;
- if(e.target.checked)boundaryLayer.addTo(map);
- else map.removeLayer(boundaryLayer);
+    const xml=await response.text();
+    const layers=findLayerIdentifiers(xml);
+
+    layers.forEach(item=>availableGibsLayers.set(item.id,item.label));
+
+    if (layers.length) {
+      const select=$("viirsProduct");
+      const current=select.value;
+      select.innerHTML="";
+
+      layers.forEach(item=>{
+        const option=document.createElement("option");
+        option.value=item.id;
+        option.textContent=item.label;
+        select.appendChild(option);
+      });
+
+      if (availableGibsLayers.has(current)) select.value=current;
+      else {
+        const snpp=layers.find(x=>x.id==="VIIRS_SNPP_DayNightBand_ENCC");
+        if (snpp) select.value=snpp.id;
+      }
+
+      $("gibsStatus").className="status ok";
+      $("gibsStatus").textContent=
+        `${layers.length} matching VIIRS night/day-night imagery layers discovered in NASA GIBS capabilities.`;
+    } else {
+      $("gibsStatus").className="status warn";
+      $("gibsStatus").textContent=
+        "No matching VIIRS night-light layers were found in the current GIBS capabilities response. Check the service catalogue.";
+    }
+
+    gibsCapabilitiesLoaded=true;
+  } catch(error) {
+    console.warn("GIBS capabilities lookup failed:",error);
+    $("gibsStatus").className="status warn";
+    $("gibsStatus").textContent=
+      "GIBS layer catalogue could not be checked from this browser. The default ENCC layer can still be tested; other layer IDs are not assumed to be available.";
+  }
+}
+
+function loadNightLayer() {
+  const product=$("viirsProduct").value;
+  const date=$("viirsDate").value;
+  const opacity=Number($("nightOpacity").value)/100;
+
+  if (!product || !date) {
+    $("gibsStatus").className="status warn";
+    $("gibsStatus").textContent="Select a product and observation date.";
+    return;
+  }
+
+  if (nightLayer) {
+    map.removeLayer(nightLayer);
+    nightLayer=null;
+  }
+
+  let tileErrors=0;
+  const tileURL=
+    `${GIBS_BASE}/${encodeURIComponent(product)}/default/${date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`;
+
+  nightLayer=L.tileLayer(tileURL,{
+    opacity,
+    maxZoom:9,
+    minZoom:0,
+    attribution:"NASA GIBS / NASA Earthdata",
+    crossOrigin:true
+  });
+
+  nightLayer.on("tileerror",()=>{
+    tileErrors++;
+    if (tileErrors>=2) {
+      $("gibsStatus").className="status warn";
+      $("gibsStatus").textContent=
+        `Tiles are unavailable or failed for ${product} on ${date}. Try another date or product.`;
+    }
+  });
+
+  nightLayer.on("load",()=>{
+    if (tileErrors===0) {
+      $("gibsStatus").className="status ok";
+      $("gibsStatus").textContent=
+        `Imagery layer requested: ${product} | Observation date: ${date}.`;
+    }
+  });
+
+  nightLayer.addTo(map);
+  $("gibsStatus").className="status";
+  $("gibsStatus").textContent=`Requesting ${product} imagery for ${date}...`;
+}
+
+$("applyNight").addEventListener("click",loadNightLayer);
+$("removeNight").addEventListener("click",()=>{
+  if (nightLayer) map.removeLayer(nightLayer);
+  nightLayer=null;
+  $("gibsStatus").className="status";
+  $("gibsStatus").textContent="Night-light imagery layer removed.";
 });
 
-// ============================================================
-// 10. ROBUST CSV FIELD READING
-// ============================================================
+$("nightOpacity").addEventListener("input",()=>{
+  const opacity=Number($("nightOpacity").value);
+  $("opacityText").textContent=opacity+"%";
+  if (nightLayer) nightLayer.setOpacity(opacity/100);
+});
 
-// Find a column by case-insensitive alias.
-function findCSVField(row,aliases){
- const keys=Object.keys(row);
- for(const alias of aliases){
-  const found=keys.find(key=>key.trim().toLowerCase()===alias.toLowerCase());
-  if(found!==undefined)return row[found];
- }
- return undefined;
+
+/* =========================================================
+   5. CSV FIELD DETECTION
+========================================================= */
+
+function getRowValue(row, aliases) {
+  const keys=Object.keys(row||{});
+  for (const alias of aliases) {
+    const key=keys.find(k=>normalise(k)===normalise(alias));
+    if (key!==undefined) {
+      const value=row[key];
+      if (value!==null && value!==undefined &&
+          String(value).trim()!=="") return value;
+    }
+  }
+  return null;
 }
 
-// Parse numbers without converting missing values into zero.
-// Number(null) and Number("") both return 0, so check first.
-function parseNumber(value){
- if(value===null || value===undefined)return null;
- if(typeof value==="string" && value.trim()==="")return null;
- if(typeof value==="string"){
-  value=value.replace(/,/g,"").trim();
- }
- const number=Number(value);
- return Number.isFinite(number)?number:null;
-}
+const CSV_FIELDS={
+  region:["region","rco","region_name","rco_name"],
+  district:["district","distname","lganame","lga","district_name"],
+  ward:["ward","wardname","ward_name"],
+  eaCode:["feacode","ea_code","enumeration_area_code","ea"],
+  area:["settlement","settlement_name","SETTLEMENT_Name","area",
+        "name","admin_name","place","locality","community",
+        "eaname","ea_name","enumeration_area"],
+  mean:["mean_radiance","mean","avg_radiance","radiance_mean",
+        "mean_dn","mean_value"],
+  maximum:["max_radiance","maximum","max","radiance_max","max_dn"],
+  lit:["lit_pixels","litpixels","lit_pixel_count",
+       "number_of_lit_pixels","lit_pixel"],
+  pixelCount:["pixel_count","valid_pixels","total_pixels","n_pixels"]
+};
 
-function csvText(row,aliases){
- const value=findCSVField(row,aliases);
- return value===null || value===undefined?"":String(value).trim();
-}
-
-function csvNumber(row,aliases){
- return parseNumber(findCSVField(row,aliases));
-}
-
-function getCSVRecord(row){
- return {
-  region:csvText(row,["region","rco","region_name"]),
-  district:csvText(row,["district","distname","lga","lganame"]),
-  ward:csvText(row,["ward","wardname","ward_name"]),
-  ea:csvText(row,["feacode","ea_code","ea","eaname","enumeration_area"]),
-  area:csvText(row,[
-   "settlement","settlement_name","area","name","admin_name",
-   "place","locality","community"
-  ]),
-  mean:csvNumber(row,[
-   "mean_radiance","mean","avg_radiance","radiance_mean","mean_dn"
-  ]),
-  maximum:csvNumber(row,[
-   "max_radiance","maximum","max","radiance_max","max_dn"
-  ]),
-  litPixels:csvNumber(row,[
-   "lit_pixels","litpixels","lit_pixel_count","number_of_lit_pixels"
-  ]),
-  pixelCount:csvNumber(row,[
-   "pixel_count","valid_pixels","total_pixels","n_pixels"
-  ])
- };
-}
-
-// ============================================================
-// 11. AGGREGATE DUPLICATE AREA ROWS
-// ============================================================
-
-function aggregateRadianceRecords(rows){
- const groups=new Map();
-
- rows.forEach(row=>{
-  const record=getCSVRecord(row);
-
-  // A row with no area name cannot be reliably assigned.
-  if(!record.area)return;
-
-  // Keep similarly named settlements separate if district/ward fields exist.
-  const key=[
-   record.region.toLowerCase(),
-   record.district.toLowerCase(),
-   record.ward.toLowerCase(),
-   record.area.toLowerCase()
-  ].join("|");
-
-  if(!groups.has(key)){
-   groups.set(key,{
-    area:record.area,
-    region:record.region,
-    district:record.district,
-    ward:record.ward,
-    eaCount:0,
-    means:[],
-    weightedSum:0,
-    weightedCount:0,
-    maximum:null,
-    litPixels:0,
-    hasLitPixels:false,
-    pixelCount:0,
-    hasPixelCount:false,
-    sourceRows:0
-   });
-  }
-
-  const group=groups.get(key);
-  group.sourceRows++;
-
-  if(record.ea)group.eaCount++;
-
-  // Keep valid mean values only.
-  if(record.mean!==null){
-   group.means.push(record.mean);
-
-   // If pixel count is supplied, calculate a pixel-weighted mean.
-   if(record.pixelCount!==null && record.pixelCount>0){
-    group.weightedSum+=record.mean*record.pixelCount;
-    group.weightedCount+=record.pixelCount;
-   }
-  }
-
-  if(record.maximum!==null){
-   group.maximum=group.maximum===null?
-    record.maximum:Math.max(group.maximum,record.maximum);
-  }
-
-  if(record.litPixels!==null){
-   group.litPixels+=record.litPixels;
-   group.hasLitPixels=true;
-  }
-
-  if(record.pixelCount!==null){
-   group.pixelCount+=record.pixelCount;
-   group.hasPixelCount=true;
-  }
- });
-
- return [...groups.values()].map(group=>{
-  let mean=null;
-
-  if(group.weightedCount>0){
-   mean=group.weightedSum/group.weightedCount;
-  }else if(group.means.length){
-   // Unweighted average if pixel counts were not provided.
-   mean=group.means.reduce((sum,value)=>sum+value,0)/group.means.length;
-  }
+function readCsvRow(row) {
+  const region=getRowValue(row,CSV_FIELDS.region);
+  const district=getRowValue(row,CSV_FIELDS.district);
+  const ward=getRowValue(row,CSV_FIELDS.ward);
+  const eaCode=getRowValue(row,CSV_FIELDS.eaCode);
+  const area=getRowValue(row,CSV_FIELDS.area);
 
   return {
-   ...group,
-   mean,
-   maximum:group.maximum,
-   litPixels:group.hasLitPixels?group.litPixels:null
+    raw:row,
+    region:region===null?null:cleanText(region),
+    district:district===null?null:cleanText(district),
+    ward:ward===null?null:cleanText(ward),
+    eaCode:eaCode===null?null:cleanText(eaCode),
+    area:area===null?null:cleanText(area),
+    mean:parseNumber(getRowValue(row,CSV_FIELDS.mean)),
+    maximum:parseNumber(getRowValue(row,CSV_FIELDS.maximum)),
+    lit:parseNumber(getRowValue(row,CSV_FIELDS.lit)),
+    pixelCount:parseNumber(getRowValue(row,CSV_FIELDS.pixelCount))
   };
- }).sort((a,b)=>a.area.localeCompare(b.area));
 }
 
-// ============================================================
-// 12. FILTER RADIANCE BY CURRENT GEOGRAPHIC SELECTION
-// ============================================================
 
-function getSelectedRadianceRecords(){
- const s=selectedValues();
+/* =========================================================
+   6. MATCH CSV RECORDS TO ADMINISTRATIVE GEOGRAPHY
+========================================================= */
 
- return aggregatedRadiance.filter(record=>{
-  if(s.region!=="all" && record.region &&
-     record.region.toLowerCase()!==s.region.toLowerCase())return false;
+function buildGeoLookups() {
+  const codeMap=new Map();
+  const nameMap=new Map();
 
-  if(s.district!=="all" && record.district &&
-     record.district.toLowerCase()!==s.district.toLowerCase())return false;
+  allFeatures.forEach(feature=>{
+    const p=feature.properties;
+    const code=normalise(getEA(p));
+    const name=normalise(getEAName(p));
+    const region=normalise(getRegion(p));
+    const district=normalise(getDistrict(p));
+    const ward=normalise(getWard(p));
 
-  if(s.ward!=="all" && record.ward &&
-     record.ward.toLowerCase()!==s.ward.toLowerCase())return false;
+    const geo={
+      region:getRegion(p),
+      district:getDistrict(p),
+      ward:getWard(p),
+      ea:getEA(p),
+      name:getEAName(p)
+    };
 
-  if(s.ea!=="all" && record.ea &&
-     record.ea.toLowerCase()!==s.ea.toLowerCase())return false;
+    if (code) codeMap.set(code,geo);
 
-  // If the uploaded CSV does not contain hierarchy fields, match
-  // the selected area name where possible.
-  if(s.ea!=="all" && !record.ea &&
-     !record.region && !record.district && !record.ward &&
-     record.area.toLowerCase()!==s.ea.toLowerCase())return false;
+    if (name) {
+      const key=[region,district,ward,name].join("|");
+      nameMap.set(key,geo);
 
-  if(s.ward!=="all" && !record.ward &&
-     !record.region && !record.district &&
-     record.area.toLowerCase()!==s.ward.toLowerCase())return false;
+      const simple=nameMap.get(name);
+      if (!simple) nameMap.set(name,geo);
+      else if (simple.ea!==geo.ea) nameMap.set(name,null);
+    }
+  });
 
-  if(s.district!=="all" && !record.district &&
-     !record.region &&
-     record.area.toLowerCase()!==s.district.toLowerCase())return false;
-
-  if(s.region!=="all" && !record.region &&
-     record.area.toLowerCase()!==s.region.toLowerCase())return false;
-
-  return true;
- });
+  return {codeMap,nameMap};
 }
 
-// ============================================================
-// 13. CSV IMPORT
-// ============================================================
+let geoLookups={codeMap:new Map(),nameMap:new Map()};
 
-document.getElementById("csvFile").addEventListener("change",event=>{
- const file=event.target.files[0];
- if(!file)return;
-
- Papa.parse(file,{
-  header:true,
-  skipEmptyLines:true,
-  dynamicTyping:false,
-  complete:results=>{
-   radianceRows=results.data.filter(row=>row && Object.keys(row).length);
-
-   aggregatedRadiance=aggregateRadianceRecords(radianceRows);
-
-   updateRadianceSummary();
-
-   const validMeans=aggregatedRadiance.filter(row=>row.mean!==null).length;
-
-   setMessage(
-    "CSV imported: "+radianceRows.length+
-    " source records grouped into "+aggregatedRadiance.length+
-    " unique areas. "+validMeans+" areas have valid mean radiance."
-   );
-
-   document.getElementById("dataStatus").innerHTML=
-    "GBoS EA boundaries: Loaded ("+filteredEAs.length.toLocaleString()+")"+
-    "<br>VIIRS: Imagery display layer"+
-    "<br>CSV source records: "+radianceRows.length.toLocaleString()+
-    "<br>Unique aggregated areas: "+aggregatedRadiance.length.toLocaleString()+
-    "<br>Areas with valid means: "+validMeans.toLocaleString();
-  },
-  error:error=>{
-   setMessage("CSV import failed: "+error.message);
+function matchCsvRow(row) {
+  const code=normalise(row.eaCode);
+  if (code && geoLookups.codeMap.has(code)) {
+    return {...row,geo:geoLookups.codeMap.get(code),matched:true};
   }
- });
+
+  const area=normalise(row.area);
+  if (!area) return {...row,geo:null,matched:false};
+
+  const key=[
+    normalise(row.region),
+    normalise(row.district),
+    normalise(row.ward),
+    area
+  ].join("|");
+
+  if (geoLookups.nameMap.has(key)) {
+    const geo=geoLookups.nameMap.get(key);
+    if (geo) return {...row,geo,matched:true};
+  }
+
+  if (geoLookups.nameMap.has(area)) {
+    const geo=geoLookups.nameMap.get(area);
+    if (geo) return {...row,geo,matched:true};
+  }
+
+  return {...row,geo:null,matched:false};
+}
+
+
+/* =========================================================
+   7. FILTERING AND SAFE AGGREGATION
+========================================================= */
+
+function rowMatchesSelection(row) {
+  const region=$("regionSelect").value;
+  const district=$("districtSelect").value;
+  const ward=$("wardSelect").value;
+  const ea=$("eaSelect").value;
+
+  const hasGeo=!!row.geo;
+  const hasCsvAdmin=!!(row.region || row.district || row.ward || row.eaCode);
+
+  if (!region && !district && !ward && !ea) return true;
+
+  if (hasGeo) {
+    return (!region || normalise(row.geo.region)===normalise(region)) &&
+      (!district || normalise(row.geo.district)===normalise(district)) &&
+      (!ward || normalise(row.geo.ward)===normalise(ward)) &&
+      (!ea || normalise(row.geo.ea)===normalise(ea));
+  }
+
+  if (hasCsvAdmin) {
+    return (!region || !row.region ||
+        normalise(row.region)===normalise(region)) &&
+      (!district || !row.district ||
+        normalise(row.district)===normalise(district)) &&
+      (!ward || !row.ward ||
+        normalise(row.ward)===normalise(ward)) &&
+      (!ea || !row.eaCode ||
+        normalise(row.eaCode)===normalise(ea));
+  }
+
+  // No geography in CSV: do not falsely claim the rows match
+  // a selected administrative unit.
+  return false;
+}
+
+function aggregationKey(row) {
+  const geo=row.geo;
+  if (geo) {
+    return [
+      normalise(geo.region),
+      normalise(geo.district),
+      normalise(geo.ward),
+      normalise(geo.ea || geo.name)
+    ].join("|");
+  }
+
+  if (row.eaCode) return "EA:"+normalise(row.eaCode);
+
+  return [
+    normalise(row.region),
+    normalise(row.district),
+    normalise(row.ward),
+    normalise(row.area)
+  ].join("|");
+}
+
+function aggregateRows(rows) {
+  const groups=new Map();
+
+  rows.forEach(row=>{
+    const key=aggregationKey(row);
+    if (!key.replace(/\|/g,"")) return;
+
+    if (!groups.has(key)) {
+      groups.set(key,{
+        area:row.geo ? (row.geo.name || row.geo.ea) :
+          (row.area || row.eaCode || "Unnamed area"),
+        region:row.geo?.region || row.region || "",
+        district:row.geo?.district || row.district || "",
+        ward:row.geo?.ward || row.ward || "",
+        sourceRows:0,
+        weightedSum:0,
+        weightTotal:0,
+        means:[],
+        maxima:[],
+        litTotal:0,
+        litPresent:false
+      });
+    }
+
+    const group=groups.get(key);
+    group.sourceRows++;
+
+    if (row.mean!==null) {
+      if (row.pixelCount!==null && row.pixelCount>0) {
+        group.weightedSum += row.mean*row.pixelCount;
+        group.weightTotal += row.pixelCount;
+      } else {
+        group.means.push(row.mean);
+      }
+    }
+
+    if (row.maximum!==null) group.maxima.push(row.maximum);
+
+    if (row.lit!==null) {
+      group.litTotal += row.lit;
+      group.litPresent=true;
+    }
+  });
+
+  return [...groups.values()].map(group=>{
+    let mean=null;
+
+    // Use weighted mean only when every valid mean observation
+    // has a valid positive pixel count. Otherwise use the
+    // arithmetic mean of the valid means to avoid mixing weights.
+    const allMeansWeighted=
+      group.means.length===0 && group.weightTotal>0;
+
+    if (allMeansWeighted) {
+      mean=group.weightedSum/group.weightTotal;
+    } else {
+      const values=[
+        ...group.means,
+        ...(group.weightTotal>0 ?
+          [group.weightedSum/group.weightTotal] : [])
+      ];
+      if (values.length) {
+        mean=values.reduce((a,b)=>a+b,0)/values.length;
+      }
+    }
+
+    return {
+      area:group.area,
+      region:group.region,
+      district:group.district,
+      ward:group.ward,
+      mean,
+      maximum:group.maxima.length?Math.max(...group.maxima):null,
+      litPixels:group.litPresent?group.litTotal:null,
+      sourceRows:group.sourceRows
+    };
+  });
+}
+
+
+/* =========================================================
+   8. RENDER TABLE, KPIs AND CHART
+========================================================= */
+
+function updateRadianceDisplay() {
+  const table=$("radianceTable");
+  if (!radianceSourceRows.length) {
+    table.innerHTML='<tr><td colspan="4">Upload a radiance CSV to begin.</td></tr>';
+    $("kpiGroups").textContent="0";
+    $("kpiMean").textContent="N/A";
+    $("kpiLit").textContent="N/A";
+    $("radianceSummary").textContent="No radiance statistics loaded.";
+    $("matchStatus").textContent="Waiting for radiance statistics data.";
+    renderChart([]);
+    return;
+  }
+
+  const matched=radianceSourceRows.map(matchCsvRow);
+  const selection=$("regionSelect").value || $("districtSelect").value ||
+    $("wardSelect").value || $("eaSelect").value;
+
+  const filtered=matched.filter(rowMatchesSelection);
+  aggregatedRows=aggregateRows(filtered);
+
+  const validMeans=aggregatedRows
+    .map(r=>r.mean).filter(v=>v!==null && Number.isFinite(v));
+
+  const validLit=aggregatedRows
+    .map(r=>r.litPixels).filter(v=>v!==null && Number.isFinite(v));
+
+  const averageMean=validMeans.length
+    ? validMeans.reduce((a,b)=>a+b,0)/validMeans.length : null;
+
+  const totalLit=validLit.length
+    ? validLit.reduce((a,b)=>a+b,0) : null;
+
+  $("kpiGroups").textContent=aggregatedRows.length.toLocaleString();
+  $("kpiMean").textContent=formatNumber(averageMean,4);
+  $("kpiLit").textContent=totalLit===null?"N/A":formatNumber(totalLit,0);
+
+  if (!aggregatedRows.length) {
+    table.innerHTML='<tr><td colspan="4">No matching area records.</td></tr>';
+  } else {
+    table.innerHTML=aggregatedRows
+      .sort((a,b)=>(b.mean??-Infinity)-(a.mean??-Infinity))
+      .slice(0,500)
+      .map(row=>`
+        <tr>
+          <td title="${escapeHTML([row.region,row.district,row.ward].filter(Boolean).join(" / "))}">
+            ${escapeHTML(row.area)}
+          </td>
+          <td>${formatNumber(row.mean,4)}</td>
+          <td>${formatNumber(row.maximum,4)}</td>
+          <td>${row.litPixels===null?"N/A":formatNumber(row.litPixels,0)}</td>
+        </tr>
+      `).join("");
+  }
+
+  const unmatched=matched.filter(r=>!r.matched).length;
+  const matchedCount=matched.length-unmatched;
+  const validCount=matched.filter(r=>r.mean!==null).length;
+
+  $("radianceSummary").textContent=
+    `${aggregatedRows.length} unique area groups • ${validMeans.length} with valid mean radiance • Repeated source rows aggregated.`;
+
+  $("matchStatus").className=aggregatedRows.length?"status ok":"status warn";
+  $("matchStatus").textContent=
+    `${matchedCount} source rows matched to GBoS geography; `+
+    `${unmatched} unmatched or not linked; `+
+    `${filtered.length} records included in current view.`+
+    (selection && matchedCount===0
+      ? " No matching geographic identifiers were found for this selection."
+      : "");
+
+  $("qualityStatus").className=
+    unmatched>0 || validCount===0 ? "status warn":"status ok";
+
+  $("qualityStatus").textContent=
+    `CSV rows: ${matched.length}. Valid mean values: ${validCount}. `+
+    `Unmatched rows: ${unmatched}. Aggregated groups in current view: ${aggregatedRows.length}.`;
+
+  renderChart(aggregatedRows);
+}
+
+function escapeHTML(value) {
+  return String(value??"").replace(/[&<>"']/g,char=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[char]));
+}
+
+function renderChart(rows) {
+  const chartRows=rows
+    .filter(r=>r.mean!==null)
+    .sort((a,b)=>b.mean-a.mean)
+    .slice(0,12);
+
+  const labels=chartRows.map(r=>r.area);
+  const values=chartRows.map(r=>r.mean);
+
+  if (chart) chart.destroy();
+
+  chart=new Chart($("radianceChart"),{
+    type:"bar",
+    data:{
+      labels,
+      datasets:[{
+        label:"Mean radiance",
+        data:values,
+        backgroundColor:"rgba(85,214,232,0.65)",
+        borderColor:"#55d6e8",
+        borderWidth:1,
+        borderRadius:3
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      indexAxis:"y",
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{
+          label:ctx=>"Mean radiance: "+formatNumber(ctx.raw,5)
+        }}
+      },
+      scales:{
+        x:{ticks:{color:"#91a5bd"},grid:{color:"#24354a"}},
+        y:{ticks:{color:"#c8d5e4",font:{size:9}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+
+/* =========================================================
+   9. CSV UPLOAD AND DIAGNOSTICS
+========================================================= */
+
+$("csvFile").addEventListener("change",event=>{
+  const file=event.target.files?.[0];
+  if (!file) return;
+
+  $("csvStatus").className="status";
+  $("csvStatus").textContent="Reading "+file.name+"...";
+
+  Papa.parse(file,{
+    header:true,
+    skipEmptyLines:true,
+    dynamicTyping:false,
+    complete:results=>{
+      try {
+        const rows=(results.data||[]).filter(row=>
+          row && Object.values(row).some(v=>String(v??"").trim()!=="")
+        );
+
+        radianceSourceRows=rows.map(readCsvRow);
+        geoLookups=buildGeoLookups();
+
+        const hasMean=radianceSourceRows.some(r=>r.mean!==null);
+        const hasArea=radianceSourceRows.some(r=>r.area || r.eaCode);
+        const hasAdmin=radianceSourceRows.some(r=>
+          r.region || r.district || r.ward || r.eaCode
+        );
+
+        $("csvStatus").className="status "+(hasMean&&hasArea?"ok":"warn");
+        $("csvStatus").textContent=
+          `${file.name} loaded: ${rows.length.toLocaleString()} rows. `+
+          `Area/code fields: ${hasArea?"detected":"not detected"}. `+
+          `Administrative identifiers: ${hasAdmin?"detected":"not detected"}. `+
+          `Mean radiance: ${hasMean?"detected":"not detected"}.`;
+
+        if (results.errors?.length) {
+          console.warn("CSV parsing warnings:",results.errors);
+        }
+
+        updateRadianceDisplay();
+      } catch(error) {
+        console.error(error);
+        $("csvStatus").className="status error";
+        $("csvStatus").textContent="Could not process CSV: "+error.message;
+      }
+    },
+    error:error=>{
+      $("csvStatus").className="status error";
+      $("csvStatus").textContent="CSV parsing failed: "+error.message;
+    }
+  });
 });
 
-// ============================================================
-// 14. SUMMARY, TABLE AND CHART
-// ============================================================
 
-function formatStat(value,digits=3){
- return value===null || !Number.isFinite(value)?"N/A":value.toFixed(digits);
+/* =========================================================
+   10. EXPORT FUNCTIONS
+========================================================= */
+
+function downloadBlob(content,filename,type) {
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
-function formatInteger(value){
- return value===null || !Number.isFinite(value)?"N/A":Math.round(value).toLocaleString();
-}
-
-function updateRadianceSummary(){
- const records=getSelectedRadianceRecords();
- const validMeans=records.filter(row=>row.mean!==null);
-
- document.getElementById("kpiRecords").textContent=records.length.toLocaleString();
-
- if(validMeans.length){
-  const mean=validMeans.reduce((sum,row)=>sum+row.mean,0)/validMeans.length;
-  document.getElementById("kpiRadiance").textContent=formatStat(mean);
- }else{
-  document.getElementById("kpiRadiance").textContent="N/A";
- }
-
- document.getElementById("statsSummary").textContent=
-  records.length+" unique area groups • "+
-  validMeans.length+" with valid mean radiance • "+
-  "Repeated source rows aggregated.";
-
- renderRadianceTable(records);
- renderRadianceChart(records);
-
- if(!radianceRows.length){
-  document.getElementById("chartMessage").textContent=
-   "Upload a zonal radiance CSV to generate the area comparison.";
- }else if(!validMeans.length){
-  document.getElementById("chartMessage").textContent=
-   "No valid mean radiance values were found. Check the CSV column names and values.";
- }else{
-  document.getElementById("chartMessage").textContent=
-   "Displaying "+validMeans.length+" area groups with valid mean radiance.";
- }
-}
-
-function renderRadianceTable(records){
- const tbody=document.getElementById("statsTable");
-
- if(!records.length){
-  tbody.innerHTML='<tr><td colspan="4">No matching area records.</td></tr>';
-  return;
- }
-
- tbody.innerHTML=records.map(record=>{
-  return "<tr>"+
-   "<td>"+escapeHTML(record.area)+"</td>"+
-   "<td>"+formatStat(record.mean)+"</td>"+
-   "<td>"+formatStat(record.maximum)+"</td>"+
-   "<td>"+formatInteger(record.litPixels)+"</td>"+
-   "</tr>";
- }).join("");
-}
-
-function renderRadianceChart(records){
- const valid=records.filter(record=>record.mean!==null);
-
- if(radianceChart){
-  radianceChart.destroy();
-  radianceChart=null;
- }
-
- if(!valid.length)return;
-
- // Keep the chart readable by showing the 20 highest mean values.
- const chartRows=[...valid]
-  .sort((a,b)=>b.mean-a.mean)
-  .slice(0,20)
-  .reverse();
-
- radianceChart=new Chart(document.getElementById("radianceChart"),{
-  type:"bar",
-  data:{
-   labels:chartRows.map(row=>row.area),
-   datasets:[{
-    label:"Mean radiance",
-    data:chartRows.map(row=>row.mean),
-    backgroundColor:"rgba(64,196,216,.65)",
-    borderColor:"#40c4d8",
-    borderWidth:1
-   }]
-  },
-  options:{
-   indexAxis:"y",
-   responsive:true,
-   maintainAspectRatio:false,
-   plugins:{
-    legend:{labels:{color:"#b9cad8",font:{size:9}}},
-    tooltip:{callbacks:{
-     label:context=>"Mean radiance: "+Number(context.raw).toFixed(4)
-    }}
-   },
-   scales:{
-    x:{ticks:{color:"#91a7b9",font:{size:8}},grid:{color:"#20394b"}},
-    y:{ticks:{color:"#91a7b9",font:{size:8}},grid:{color:"#20394b"}}
-   }
+$("downloadStats").addEventListener("click",()=>{
+  if (!aggregatedRows.length) {
+    alert("No aggregated radiance statistics to export.");
+    return;
   }
- });
-}
 
-// ============================================================
-// 15. NASA GIBS LATEST AVAILABLE DATE
-// ============================================================
+  const headers=[
+    "area","region","district","ward","mean_radiance",
+    "maximum_radiance","lit_pixels","source_rows"
+  ];
 
-function utcDateString(date){
- return date.toISOString().slice(0,10);
-}
+  const lines=[headers.join(",")];
 
-function parseLatestTimeValue(value){
- const text=String(value||"").trim();
- if(!text)return null;
+  aggregatedRows.forEach(row=>{
+    const values=[
+      row.area,row.region,row.district,row.ward,
+      row.mean,row.maximum,row.litPixels,row.sourceRows
+    ].map(value=>{
+      const text=String(value??"");
+      return '"'+text.replace(/"/g,'""')+'"';
+    });
+    lines.push(values.join(","));
+  });
 
- if(text.includes("/")){
-  const parts=text.split("/");
-  const end=parts[1];
-  if(end && end!==".."){
-   const parsed=new Date(end);
-   if(!isNaN(parsed))return utcDateString(parsed);
-  }
- }
-
- const parsed=new Date(text);
- return isNaN(parsed)?null:utcDateString(parsed);
-}
-
-async function getLatestGIBSDate(){
- const response=await fetch(CONFIG.gibsCapabilities+"?request=GetCapabilities&service=WMTS");
- if(!response.ok)throw new Error("GIBS capabilities HTTP "+response.status);
-
- const xmlText=await response.text();
- const xml=new DOMParser().parseFromString(xmlText,"text/xml");
- const layers=[...xml.getElementsByTagNameNS("*","Layer")];
-
- const target=layers.find(layer=>{
-  const identifiers=[...layer.getElementsByTagNameNS("*","Identifier")];
-  return identifiers.some(node=>node.textContent.trim()===CONFIG.viirsLayer);
- });
-
- if(!target)throw new Error("VIIRS layer not found in GIBS capabilities.");
-
- const dimensions=[...target.getElementsByTagNameNS("*","Dimension")];
- const timeDimension=dimensions.find(d=>{
-  const identifier=d.getElementsByTagNameNS("*","Identifier")[0];
-  return identifier && identifier.textContent.trim().toLowerCase()==="time";
- });
-
- if(!timeDimension)throw new Error("No time dimension found.");
-
- const values=[...timeDimension.getElementsByTagNameNS("*","Value")]
-  .map(node=>node.textContent.trim()).filter(Boolean);
-
- const dates=values.map(parseLatestTimeValue).filter(Boolean).sort();
-
- if(dates.length)return dates[dates.length-1];
-
- const defaultNode=timeDimension.getElementsByTagNameNS("*","Default")[0];
- const defaultDate=parseLatestTimeValue(defaultNode?.textContent);
- if(defaultDate)return defaultDate;
-
- throw new Error("No available observation date found.");
-}
-
-async function initialiseObservationDate(){
- const input=document.getElementById("obsDate");
- const status=document.getElementById("dateStatus");
-
- try{
-  const latest=await getLatestGIBSDate();
-  input.value=latest;
-  input.max=utcDateString(new Date());
-  dateAvailability={latest,source:"NASA GIBS capabilities"};
-  status.textContent="Latest date published by NASA GIBS: "+latest;
- }catch(error){
-  console.warn(error);
-  const fallback=new Date();
-  fallback.setUTCDate(fallback.getUTCDate()-3);
-  const date=utcDateString(fallback);
-  input.value=date;
-  input.max=utcDateString(new Date());
-  dateAvailability={latest:date,source:"provisional fallback"};
-  status.textContent=
-   "GIBS date catalogue unavailable. Provisional date selected; tile availability must be checked.";
- }
-
- loadVIIRS();
-}
-
-// ============================================================
-// 16. LOAD VIIRS IMAGERY
-// ============================================================
-
-function loadVIIRS(){
- const date=document.getElementById("obsDate").value;
- if(!date)return;
-
- if(viirsLayer)map.removeLayer(viirsLayer);
-
- const layerName=document.getElementById("satellite").value;
- const url=CONFIG.gibsBase+layerName+
-  "/default/"+date+"/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png";
-
- viirsLayer=L.tileLayer(url,{
-  opacity:Number(document.getElementById("opacity").value)/100,
-  maxNativeZoom:9,
-  maxZoom:17,
-  attribution:"NASA GIBS / NOAA VIIRS"
- });
-
- let errors=0;
- viirsLayer.on("tileerror",()=>{
-  errors++;
-  if(errors>=3){
-   document.getElementById("dateStatus").textContent=
-    "Some imagery tiles unavailable for "+date+
-    ". Try another date or check the NASA GIBS service.";
-  }
- });
-
- if(document.getElementById("nightToggle").checked){
-  viirsLayer.addTo(map);
-  viirsLayer.bringToBack();
- }
-
- document.getElementById("mapDate").textContent="VIIRS: "+date;
- document.getElementById("connection").textContent="● VIIRS REQUESTED";
-}
-
-document.getElementById("obsDate").addEventListener("change",()=>{
- const date=document.getElementById("obsDate").value;
- document.getElementById("dateStatus").textContent=
-  "Selected VIIRS observation date: "+date;
- loadVIIRS();
+  downloadBlob(lines.join("\n"),"GBoS_Nightlight_Radiance_Statistics.csv","text/csv");
 });
 
-document.getElementById("satellite").addEventListener("change",loadVIIRS);
+$("downloadGeo").addEventListener("click",()=>{
+  if (!selectedFeatures.length) {
+    alert("No selected geographic features to export.");
+    return;
+  }
 
-document.getElementById("opacity").addEventListener("input",event=>{
- if(viirsLayer)viirsLayer.setOpacity(Number(event.target.value)/100);
+  const geojson={
+    type:"FeatureCollection",
+    features:selectedFeatures
+  };
+
+  downloadBlob(
+    JSON.stringify(geojson,null,2),
+    "GBoS_Selected_EA_Boundaries.geojson",
+    "application/geo+json"
+  );
 });
 
-document.getElementById("nightToggle").addEventListener("change",event=>{
- if(!viirsLayer)return;
- if(event.target.checked){
-  viirsLayer.addTo(map);
-  viirsLayer.bringToBack();
- }else{
-  map.removeLayer(viirsLayer);
- }
+
+/* =========================================================
+   11. RESET
+========================================================= */
+
+$("resetBtn").addEventListener("click",()=>{
+  $("regionSelect").value="";
+  updateDistrictOptions();
+  $("districtSelect").value="";
+  updateWardOptions();
+  $("wardSelect").value="";
+  updateEAOptions();
+  $("eaSelect").value="";
+  $("boundaryLevel").value="ea";
+  $("showBoundaries").checked=true;
+  $("basemapSelect").value="dark";
+  setBasemap("dark");
+
+  if (nightLayer) map.removeLayer(nightLayer);
+  nightLayer=null;
+
+  if (allFeatures.length) {
+    selectedFeatures=[...allFeatures];
+    updateGeography();
+    map.setView([13.45,-15.45],8);
+  }
 });
 
-// ============================================================
-// 17. EXPORT CSV AND GEOJSON
-// ============================================================
+$("applyGeo").addEventListener("click",updateRadianceDisplay);
 
-function downloadBlob(content,type,filename){
- const blob=new Blob([content],{type});
- const url=URL.createObjectURL(blob);
- const a=document.createElement("a");
- a.href=url;
- a.download=filename;
- document.body.appendChild(a);
- a.click();
- a.remove();
- URL.revokeObjectURL(url);
-}
 
-function exportCSV(){
- const records=getSelectedRadianceRecords();
+/* =========================================================
+   12. STARTUP
+========================================================= */
 
- if(!records.length){
-  setMessage("No aggregated radiance records available for export.");
-  return;
- }
-
- const output=records.map(row=>({
-  region:row.region,
-  district:row.district,
-  ward:row.ward,
-  area:row.area,
-  source_EA_records:row.sourceRows,
-  mean_radiance:row.mean,
-  max_radiance:row.maximum,
-  lit_pixels:row.litPixels
- }));
-
- downloadBlob(
-  Papa.unparse(output),
-  "text/csv;charset=utf-8",
-  "GBoS_Aggregated_Radiance_Statistics.csv"
- );
-}
-
-function exportGeoJSON(){
- if(!eaGeoJSON)return;
-
- const selected=getFilteredEAs();
- if(!selected.length){
-  setMessage("No selected EA features available for export.");
-  return;
- }
-
- downloadBlob(
-  JSON.stringify({
-   type:"FeatureCollection",
-   name:"GBoS_Selected_Census_EAs",
-   features:selected
-  },null,2),
-  "application/geo+json",
-  "GBoS_Selected_Census_EAs.geojson"
- );
-}
-
-document.getElementById("csvBtn").addEventListener("click",exportCSV);
-document.getElementById("geoBtn").addEventListener("click",exportGeoJSON);
-
-// ============================================================
-// 18. RESET
-// ============================================================
-
-function resetDashboard(){
- if(!eaGeoJSON)return;
-
- document.getElementById("region").value="all";
- document.getElementById("district").value="all";
- document.getElementById("ward").value="all";
- document.getElementById("ea").value="all";
- document.getElementById("boundaryLevel").value="region";
- document.getElementById("opacity").value=85;
- document.getElementById("nightToggle").checked=true;
- document.getElementById("boundaryToggle").checked=true;
- document.getElementById("basemap").value="dark";
-
- populateDistrictSelector();
- populateWardSelector();
- populateEASelector();
- setBasemap();
-
- if(viirsLayer && !map.hasLayer(viirsLayer))viirsLayer.addTo(map);
- if(boundaryLayer && !map.hasLayer(boundaryLayer))boundaryLayer.addTo(map);
- if(viirsLayer)viirsLayer.setOpacity(.85);
-
- map.fitBounds(CONFIG.nationalBounds);
- updateSelection();
-
- if(dateAvailability?.latest){
-  document.getElementById("obsDate").value=dateAvailability.latest;
-  loadVIIRS();
- }
-
- setMessage("Dashboard reset to the national view.");
-}
-
-document.getElementById("resetBtn").addEventListener("click",resetDashboard);
-
-// ============================================================
-// 19. START APPLICATION
-// ============================================================
-
-(async function startDashboard(){
- await loadAdministrativeData();
- initialiseObservationDate();
+(async function init() {
+  await loadBoundaries();
+  loadGibsCatalogue();
 })();
 </script>
 </body>
